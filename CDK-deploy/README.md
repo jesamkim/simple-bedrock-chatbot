@@ -49,6 +49,13 @@ cdk deploy
 CloudFront 배포 URL을 확인할 수 있습니다.
 
 4. 브라우저에서 CloudFront distribution URL에 연결합니다.
+```
+# Output 예시
+Outputs:
+cdk-chatbot-claude3.CloudFrontDistributionURL = xxx2cj9ksuhwvn.cloudfront.net
+```
+
+<br>
 
 ## Cloud9에서 테스트
 
