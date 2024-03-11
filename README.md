@@ -15,7 +15,7 @@ pip install -e langchain/libs/langchain
 
 ## 챗봇 실행을 위한 패키지 설치
 ```
-pip install -r ./requirements.txt
+pip install -r ./claude-v3/requirements.txt
 ```
 
 
