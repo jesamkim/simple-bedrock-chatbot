@@ -32,7 +32,7 @@ To deploy:
 2. 디펜던시 설치
  
 ```
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
