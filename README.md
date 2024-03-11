@@ -20,7 +20,7 @@ pip install -r ./claude-v3/requirements.txt
 
 
 ## streamlit 엡 실행
-- AWS Cloud9과 같은 환경에서는 터미널에서 아래 실행 후,  상단 메뉴의 Preview > Preview Running Application 에서 streamlit UI를 빠르게 띄울 수 있습니다.
+- AWS Cloud9 환경에서는 터미널에서 아래 실행 후,  상단 메뉴의 Preview > Preview Running Application 에서 streamlit UI를 빠르게 띄울 수 있습니다.
 ```
 streamlit run ./claude-v3/chatbot_app.py --server.port 8080
 ```
