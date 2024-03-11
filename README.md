@@ -22,7 +22,7 @@ pip install -r ./requirements.txt
 ## streamlit 엡 실행
 - AWS Cloud9과 같은 환경에서는 Preview에서 streamlit UI를 빠르게 띄울 수 있습니다.
 ```
-streamlit run ./claude-v3/chatbot.py --server.port 8080
+streamlit run ./claude-v3/chatbot_app.py --server.port 8080
 ```
 
 ![result_01](./img/result_1.png)
