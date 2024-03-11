@@ -57,7 +57,7 @@ cdk-chatbot-claude3.CloudFrontDistributionURL = xxx2cj9ksuhwvn.cloudfront.net
 
 <br>
 
-## Cloud9에서 테스트
+## (Optional) Cloud9에서 테스트
 
 cdk 템플릿을 배포한 후에는 Cloud9에서 바로 Streamlit 앱을 테스트할 수 있습니다.
 도커를 사용할 수 있지만 적절한 권한이 있는 역할을 설정하거나 필요한 Python 디펜던시를 설치한 후 터미널에서 직접 Streamlit 앱을 실행해야 합니다.
