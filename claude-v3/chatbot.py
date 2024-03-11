@@ -1,9 +1,3 @@
-"""
-2024-Mar-10 : original code creation by davidshtian
-
-2024-Mar-11 : modified by Jesam Kim
-"""
-
 # 필요한 라이브러리 가져오기
 import base64
 import random
