@@ -49,7 +49,12 @@ def init_conversationchain(
         "system": SYSTEM_PROMPT,
     }
 
-    llm = BedrockChat(model_id=MODEL_ID, model_kwargs=model_kwargs, streaming=True)
+    llm = BedrockChat(
+        region_name="us-west-2", ## Bedrock Claude v3 리전
+        model_id=MODEL_ID, 
+        model_kwargs=model_kwargs, 
+        streaming=True
+        )
 
     conversation = ConversationChain(
         llm=llm,

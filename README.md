@@ -3,7 +3,7 @@ Amazon Bedrock (Claude v3) &amp; LangChain BedrockChat &amp; Streamlit 으로 �
 
 ## 환경
 - AWS Cloud9에서 수행하는 것을 권장드립니다.
-- Bedrock의 Claude에 대한 model access는 설정 되어 있어야 합니다.
+- Bedrock의 Claude에 대한 model access는 설정 되어 있어야 합니다. (이 코드는 us-west-2에서 테스트 했습니다.)
 - 코드 상에서 따로 자격증명을 다루지 않습니다. (aws configure 사전 설정 필요)
 
 
@@ -28,5 +28,6 @@ streamlit run ./claude-v3/chatbot_app.py --server.port 8080
 ![result_01](./img/result_1.png)
 
 
-#### Original Contents (원본 컨텐츠)
-> [Bedrock-ChatBot-with-LangChain-and-Streamlit](https://github.com/davidshtian/Bedrock-ChatBot-with-LangChain-and-Streamlit)
+#### Reference Contents
+> [Bedrock-ChatBot-with-LangChain-and-Streamlit](https://github.com/davidshtian/Bedrock-ChatBot-with-LangChain-and-Streamlit) <br>
+> [aws-samples/deploy-streamlit-app](https://github.com/aws-samples/deploy-streamlit-app)
