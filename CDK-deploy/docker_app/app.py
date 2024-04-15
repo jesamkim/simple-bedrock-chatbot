@@ -28,11 +28,11 @@ CLAUDE_PROMPT = ChatPromptTemplate.from_messages(
 # 초기 메시지 설정
 INIT_MESSAGE = {
     "role": "assistant",
-    "content": "안녕하세요! 저는 Bedrock의 Claude v3 입니다. 무엇을 도와드릴까요?",
+    "content": "안녕하세요! 저는 Claude 3 챗봇 입니다. 무엇을 도와드릴까요?",
 }
 
 # 시스템 프롬프트 설정
-SYSTEM_PROMPT = "You're a cool assistant, love to response with emoji."
+SYSTEM_PROMPT = "You're a cool assistant. If you don't know the answer, just say that you don't know, don't try to make up an answer."
 
 
 class StreamHandler(BaseCallbackHandler):
@@ -71,7 +71,7 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int]:
             "Temperature",
             min_value=0.0,
             max_value=1.0,
-            value=1.0,
+            value=0.0,
             step=0.1,
             key=f"{st.session_state['widget_key']}_Temperature",
         )
