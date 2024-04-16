@@ -14,6 +14,7 @@ from langchain.memory import ConversationBufferWindowMemory
 from langchain.prompts.chat import ChatPromptTemplate, MessagesPlaceholder
 from PIL import Image
 
+
 # 사용할 Claude 모델 ID 지정 (Anthropic Claude v3 sonnet)
 MODEL_ID = "anthropic.claude-3-sonnet-20240229-v1:0"
 
@@ -32,8 +33,7 @@ INIT_MESSAGE = {
 }
 
 # 시스템 프롬프트 설정
-SYSTEM_PROMPT = "You're a cool assistant. If you don't know the answer, just say that you don't know, don't try to make up an answer."
-
+SYSTEM_PROMPT = "You're a cool assistant. By default, it answers in Korean. If you don't know the answer, just say that you don't know, don't try to make up an answer."
 
 class StreamHandler(BaseCallbackHandler):
     """
@@ -61,9 +61,9 @@ def set_page_config() -> None:
     st.subheader("- model : Claude v3 sonnet")
 
 
-def get_sidebar_params() -> Tuple[float, float, int, int, int]:
+def get_sidebar_params() -> Tuple[float, float, int, int, int, bool]:
     """
-    왼쪽 사이드바에 Claude v3 파라미터를 표시합니다.
+    왼쪽 사이드바에 Claude v3 파라미터와 Google Search 옵션을 표시합니다.
     """
     with st.sidebar:
         st.markdown("## Inference Parameters")
@@ -107,8 +107,9 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int]:
             step=1,
             key=f"{st.session_state['widget_key']}_Memory Window",
         )
+        google_search_enabled = st.checkbox("Google Search", value=False)
 
-    return temperature, top_p, top_k, max_tokens, memory_window
+    return temperature, top_p, top_k, max_tokens, memory_window, google_search_enabled
 
 
 def init_conversationchain(
@@ -228,6 +229,7 @@ def langchain_messages_format(messages: List[Union[AIMessage, HumanMessage]]) ->
     return messages
 
 
+
 def main() -> None:
     """
     Streamlit 앱의 메인 실행 함수입니다.
@@ -238,7 +240,7 @@ def main() -> None:
     if "widget_key" not in st.session_state:
         st.session_state["widget_key"] = str(random.randint(1, 1000000))
 
-    temperature, top_p, top_k, max_tokens, memory_window = get_sidebar_params()
+    temperature, top_p, top_k, max_tokens, memory_window, google_search_enabled = get_sidebar_params()
     conv_chain = init_conversationchain(temperature, top_p, top_k, max_tokens, memory_window)
 
     # 새로운 채팅을 시작할 수 있는 버튼 추가
@@ -324,12 +326,31 @@ def main() -> None:
 
     # 마지막 메시지가 어시스턴트가 아닌 경우 새로운 응답 생성
     if st.session_state.messages[-1]["role"] != "assistant":
-        with st.chat_message("assistant"):
-            response = generate_response(
-                conv_chain, [{"role": "user", "content": prompt_new}]
-            )
+        if google_search_enabled:
+            # Google 검색 수행
+            from search import google_search
+            search_results = google_search(prompt)
+
+            # Claude에게 전달할 context 정보 생성
+            search_context = "\n".join(search_results)
+            prompt_with_context = f"{prompt}\n\nContext:\n{search_context}"
+
+            # Claude에게 context 정보와 함께 prompt 전달
+            with st.chat_message("assistant"):
+                response = generate_response(
+                    conv_chain, [{"role": "user", "content": prompt_with_context}]
+                )
+        else:
+            # 기존 동작 유지
+            with st.chat_message("assistant"):
+                response = generate_response(
+                    conv_chain, [{"role": "user", "content": prompt_new}]
+                )
+
         message = {"role": "assistant", "content": response}
         st.session_state.messages.append(message)
+
+
 
 
 if __name__ == "__main__":

@@ -22,22 +22,39 @@ Prerequisites:
 * python 3.8
 * docker
 * use a Chrome browser for development
-* `anthropic.claude-v3` model activated in Amazon Bedrock in your AWS account (us-west-2)
+* 당신의 AWS 계정에서 `anthropic.claude-v3` 모델이 us-west-2 리전에 활성화 되어 있어야 합니다.
 * 이 데모를 생성하는 데 사용된 환경은 Amazon Linux 2023이 설치된 AWS Cloud9 m5.large 인스턴스이지만 다른 구성에서도 작동합니다.
 
 To deploy:
 
-1. Edit `docker_app/config_file.py`, choose a `STACK_NAME` and a `CUSTOM_HEADER_VALUE`.
+0. Edit `docker_app/config_file.py`, choose a `STACK_NAME` and a `CUSTOM_HEADER_VALUE`.
+
+1. git clone
+```
+git clone https://github.com/jesamkim/simple-bedrock-chatbot.git
+
+cd simple-bedrock-chatbot/CDK-deploy
+
+```
 
 2. 디펜던시 설치
  
 ```
 python3 -m venv .venv
 source .venv/bin/activate
+
 pip install -r requirements.txt
 ```
 
-3. CDK 템플릿 배포
+3. [필수] Google 검색 기능을 사용하기 위해 각자 미리 발급받은 `GOOGLE_ENGINE_ID`와 `GOOGLE_API_KEY`가 필요 합니다.
+`GOOGLE_ENGINE_ID`와 `GOOGLE_API_KEY` 값을 simple-bedrock-chatbot/CDK-deploy/docker_app/search.py 를 수정하여 넣습니다.
+```
+# Google API 키와 검색 엔진 ID를 환경 변수에서 가져옵니다.
+API_KEY = "YOUR_GOOGLE_API_KEY"
+SEARCH_ENGINE_ID = "YOUR_GOOGLE_ENGINE_ID"
+```
+
+4. CDK 템플릿 배포 (배포는 서울 리전에 할 수 있습니다)
 
 ```
 cdk bootstrap
@@ -48,7 +65,7 @@ cdk deploy
 
 CloudFront 배포 URL을 확인할 수 있습니다.
 
-4. 브라우저에서 CloudFront distribution URL에 연결합니다.
+5. 브라우저에서 CloudFront distribution URL에 연결합니다.
 ```
 # Output 예시
 Outputs:
