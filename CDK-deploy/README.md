@@ -18,7 +18,7 @@ docker_app 폴더에서 Streamlit 앱을 찾을 수 있습니다. 로컬에서 �
 
 메인 폴더에는 ECS/ALB에 앱을 배포하기 위한 cdk 템플릿이 있습니다.
 
-Prerequisites:
+### Prerequisites:
 
 * python 3.8
 * docker
@@ -26,10 +26,10 @@ Prerequisites:
 * 당신의 AWS 계정에서 `anthropic.claude-v3` 모델이 us-west-2 리전에 활성화 되어 있어야 합니다.
 * 이 데모를 생성하는 데 사용된 환경은 Amazon Linux 2023이 설치된 AWS Cloud9 m5.large 인스턴스이지만 다른 구성에서도 작동합니다.
 
-To deploy:
+## 배포 방법 (AWS Cloud9 환경을 추천) :
 
 
-1. git clone
+### 1. git clone
 
 ```
 git clone https://github.com/jesamkim/simple-bedrock-chatbot.git
@@ -40,7 +40,7 @@ cd simple-bedrock-chatbot/CDK-deploy
 (optional) Edit `docker_app/config_file.py`, choose a `STACK_NAME` and a `CUSTOM_HEADER_VALUE`.
 
 
-2. 디펜던시 설치
+### 2. 디펜던시 설치
  
 ```
 python3 -m venv .venv
@@ -49,26 +49,29 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-3. [필수] Google 검색 기능을 사용하기 위해 각자 미리 발급받은 `GOOGLE_ENGINE_ID`와 `GOOGLE_API_KEY`가 필요 합니다.
-`GOOGLE_ENGINE_ID`와 `GOOGLE_API_KEY` 값을 simple-bedrock-chatbot/CDK-deploy/docker_app/search.py 를 수정하여 넣습니다.
+### 3. Google 검색을 위한 API 설정
+[필수] Google 검색 기능을 사용하기 위해 각자 사전에 발급받은 `GOOGLE_ENGINE_ID`와 `GOOGLE_API_KEY`가 필요 합니다.
+`GOOGLE_ENGINE_ID`와 `GOOGLE_API_KEY` 값을 <b>simple-bedrock-chatbot/CDK-deploy/docker_app/search.py</b>에 넣어 수정합니다.
 ```
 # Google API 키와 검색 엔진 ID를 환경 변수에서 가져옵니다.
 API_KEY = "YOUR_GOOGLE_API_KEY"
 SEARCH_ENGINE_ID = "YOUR_GOOGLE_ENGINE_ID"
 ```
 
-4. CDK 템플릿 배포 (배포는 서울 리전에 할 수 있습니다)
+### 4. CDK 템플릿 배포 
+- 배포는 서울 리전에 해도 됩니다.
+- Bedrock Claude 3 모델 access 만 us-west-2에 미리 해두시면 됩니다.
 
 ```
 cdk bootstrap
 cdk deploy
 ```
 
-배포에는 5~10분이 소요됩니다.
+배포에는 약 10분이 소요됩니다.
 
 CloudFront 배포 URL을 확인할 수 있습니다.
 
-5. 브라우저에서 CloudFront distribution URL에 연결합니다.
+### 5. 브라우저에서 CloudFront distribution URL에 연결합니다.
 ```
 # Output 예시
 Outputs:
