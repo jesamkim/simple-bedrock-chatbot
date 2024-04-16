@@ -75,6 +75,11 @@ Outputs:
 cdk-chatbot-claude3.CloudFrontDistributionURL = xxx2cj9ksuhwvn.cloudfront.net
 ```
 
+
+## 실행 화면
+![screenshot1](/CDK-deploy/img/screenshot1.png)
+
+
 <br>
 
 ## (Optional) Cloud9에서 테스트
