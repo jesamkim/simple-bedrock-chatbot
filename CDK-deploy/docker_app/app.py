@@ -14,6 +14,10 @@ from langchain.memory import ConversationBufferWindowMemory
 from langchain.prompts.chat import ChatPromptTemplate, MessagesPlaceholder
 from PIL import Image
 
+from search import get_top_urls
+from search import google_search
+import requests
+from bs4 import BeautifulSoup
 
 # 사용할 Claude 모델 ID 지정 (Anthropic Claude v3 sonnet)
 MODEL_ID = "anthropic.claude-3-sonnet-20240229-v1:0"
@@ -153,6 +157,19 @@ def init_conversationchain(
         st.session_state.messages = [INIT_MESSAGE]
 
     return conversation
+
+
+def get_url_content(url: str, max_length: int = 1000) -> str:
+    try:
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, "html.parser")
+        content = soup.get_text()
+        if len(content) > max_length:
+            content = content[:max_length] + "..."
+        return content
+    except:
+        return "Failed to retrieve content from URL."
+
 
 
 def generate_response(
@@ -328,24 +345,30 @@ def main() -> None:
     if st.session_state.messages[-1]["role"] != "assistant":
         if google_search_enabled:
             # Google 검색 수행
-            from search import google_search
-            search_results = google_search(prompt)
+            top_urls = get_top_urls(prompt)
 
-            # Claude에게 전달할 context 정보 생성
-            search_context = "\n".join(search_results)
-            prompt_with_context = f"{prompt}\n\nContext:\n{search_context}"
+            # URL 내용을 가져와 context 생성
+            search_context = ""
+            for url in top_urls:
+                content = get_url_content(url, max_length=1000) # max_length 매개변수 전달
+                search_context += f"URL: {url}\n{content}\n\n"
 
             # Claude에게 context 정보와 함께 prompt 전달
             with st.chat_message("assistant"):
                 response = generate_response(
-                    conv_chain, [{"role": "user", "content": prompt_with_context}]
+                    conv_chain, [{"role": "user", "content": f"{prompt}\n\nContext:\n{search_context}"}]
                 )
+                response_text = response["response"]
+                cited_urls = [f"[{i+1}] {url}" for i, url in enumerate(top_urls)]
+                citation = "\n\nCited URLs:\n" + "\n".join(cited_urls)
+                st.markdown(citation)
         else:
             # 기존 동작 유지
             with st.chat_message("assistant"):
                 response = generate_response(
                     conv_chain, [{"role": "user", "content": prompt_new}]
                 )
+                st.markdown(response["response"])
 
         message = {"role": "assistant", "content": response}
         st.session_state.messages.append(message)

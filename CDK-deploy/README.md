@@ -27,15 +27,17 @@ Prerequisites:
 
 To deploy:
 
-0. Edit `docker_app/config_file.py`, choose a `STACK_NAME` and a `CUSTOM_HEADER_VALUE`.
 
 1. git clone
+
 ```
 git clone https://github.com/jesamkim/simple-bedrock-chatbot.git
 
 cd simple-bedrock-chatbot/CDK-deploy
 
 ```
+(optional) Edit `docker_app/config_file.py`, choose a `STACK_NAME` and a `CUSTOM_HEADER_VALUE`.
+
 
 2. 디펜던시 설치
  
