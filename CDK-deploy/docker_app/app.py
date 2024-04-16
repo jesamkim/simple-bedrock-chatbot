@@ -61,8 +61,9 @@ def set_page_config() -> None:
     Streamlit 페이지 설정을 초기화합니다.
     """
     st.set_page_config(page_title="🤖 Chat with Bedrock", layout="wide")
-    st.title("🤖 Chatbot demo w/ Amazon Bedrock")
-    st.subheader("- model : Claude v3 sonnet")
+    st.title("Amazon Bedrock Chatbot demo")
+    st.caption("- 이미지 업로드와 Google Search를 함께 사용하지 마세요. 답변이 이상해집니다.")
+    st.caption("- model: Claude 3 sonnet")
 
 
 def get_sidebar_params() -> Tuple[float, float, int, int, int, bool]:
@@ -111,7 +112,20 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, bool]:
             step=1,
             key=f"{st.session_state['widget_key']}_Memory Window",
         )
-        google_search_enabled = st.checkbox("Google Search", value=False)
+
+        # 업로드된 이미지가 있는 경우 Google Search 옵션을 비활성화
+        if "messages" in st.session_state:
+            uploaded_images = [
+                message["images"]
+                for message in st.session_state.messages
+                if "images" in message and message["images"]
+            ]
+            if uploaded_images:
+                google_search_enabled = False
+            else:
+                google_search_enabled = st.checkbox("Google Search", value=False)
+        else:
+            google_search_enabled = st.checkbox("Google Search", value=False)
 
     return temperature, top_p, top_k, max_tokens, memory_window, google_search_enabled
 
@@ -368,7 +382,6 @@ def main() -> None:
                 response = generate_response(
                     conv_chain, [{"role": "user", "content": prompt_new}]
                 )
-                st.markdown(response["response"])
 
         message = {"role": "assistant", "content": response}
         st.session_state.messages.append(message)
