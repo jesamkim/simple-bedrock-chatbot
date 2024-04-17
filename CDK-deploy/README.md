@@ -52,7 +52,7 @@ pip install -r requirements.txt
 
 ### 3. Google 검색을 위한 API 설정
 [필수] Google 검색 기능을 사용하기 위해 각자 사전에 발급받은 <b>[GOOGLE_ENGINE_ID](https://programmablesearchengine.google.com/controlpanel/all?hl=ko)와 [GOOGLE_API_KEY](https://developers.google.com/custom-search/v1/overview?hl=ko) </b>가 필요 합니다.
-`GOOGLE_ENGINE_ID`와 `GOOGLE_API_KEY` 값을 <b>simple-bedrock-chatbot/CDK-deploy/docker_app/search.py</b>에 넣어 수정합니다.
+`GOOGLE_ENGINE_ID`와 `GOOGLE_API_KEY` 값을 <b>simple-bedrock-chatbot/CDK-deploy/docker_app/search.py</b>에 넣어 수정 후 저장 합니다.
 ```
 # Google API 키와 검색 엔진 ID를 환경 변수에서 가져옵니다.
 API_KEY = "YOUR_GOOGLE_API_KEY"
@@ -61,7 +61,7 @@ SEARCH_ENGINE_ID = "YOUR_GOOGLE_ENGINE_ID"
 
 ### 4. CDK 템플릿 배포 
 - 배포는 서울 리전에 해도 됩니다.
-- Bedrock Claude 3 모델 access 만 us-west-2에 미리 해두시면 됩니다.
+- Bedrock Claude 3 모델 access 권한 설정만 us-west-2에 미리 해두시면 됩니다.
 
 ```
 cdk bootstrap
