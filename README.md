@@ -1,9 +1,9 @@
-# Bedrock의 Multi Modal을 활용한 간단한 Chatbot
-Amazon Bedrock (Claude v3) &amp; LangChain BedrockChat &amp; Streamlit 으로 구성하는 간단 챗봇 어플리케이션
+# Amazon Bedrock의 Claude 3 모델을 활용한 간단한 Chatbot
+Amazon Bedrock (Claude 3 Sonnet) &amp; LangChain BedrockChat &amp; Streamlit 으로 구성하는 간단 챗봇 어플리케이션
 
 ## 환경
 - AWS Cloud9에서 수행하는 것을 권장드립니다.
-- Bedrock의 Claude에 대한 model access는 설정 되어 있어야 합니다. (이 코드는 us-west-2에서 테스트 했습니다.)
+- Amazon Bedrock의 Claude 에 대한 model access는 설정 되어 있어야 합니다. (Bedrock 모델 권한은 us-west-2 로 설정되어 있습니다)
 - 코드 상에서 따로 자격증명을 다루지 않습니다. (aws configure 사전 설정 필요)
 
 
