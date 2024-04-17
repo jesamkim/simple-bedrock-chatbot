@@ -5,3 +5,4 @@ boto3
 streamlit-cognito-auth==1.2.0
 google-api-python-client
 bs4
+nltk

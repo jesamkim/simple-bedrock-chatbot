@@ -19,6 +19,30 @@ from search import google_search
 import requests
 from bs4 import BeautifulSoup
 
+
+import nltk
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('stopwords')
+
+
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
+def extract_keywords(text):
+    stop_words = set(stopwords.words('english'))
+    words = word_tokenize(text.lower())
+
+    filtered_words = [word for word in words if word not in stop_words and word.isalnum()]
+
+    return filtered_words
+
+
 # 사용할 Claude 모델 ID 지정 (Anthropic Claude v3 sonnet)
 MODEL_ID = "anthropic.claude-3-sonnet-20240229-v1:0"
 
@@ -56,6 +80,7 @@ class StreamHandler(BaseCallbackHandler):
         self.container.markdown(self.text)
 
 
+
 def set_page_config() -> None:
     """
     Streamlit 페이지 설정을 초기화합니다.
@@ -64,15 +89,7 @@ def set_page_config() -> None:
     st.title("Amazon Bedrock Chatbot demo")
     st.caption("- 이미지 업로드와 Google Search를 함께 사용하지 마세요. 답변이 이상해집니다.")
     st.caption("- model: Claude 3 sonnet")
-    
-    # 모바일 브라우저에서 전체화면 모드 활성화
-    st.markdown(
-        """
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="mobile-web-app-capable" content="yes">
-        """,
-        unsafe_allow_html=True,
-    )
+
 
 
 def get_sidebar_params() -> Tuple[float, float, int, int, int, bool]:
@@ -368,7 +385,9 @@ def main() -> None:
     if st.session_state.messages[-1]["role"] != "assistant":
         if google_search_enabled:
             # Google 검색 수행
-            top_urls = get_top_urls(prompt)
+            keywords = extract_keywords(prompt) #검색 키워드 추출
+            query = ' '.join(keywords)
+            top_urls = get_top_urls(query)
 
             # URL 내용을 가져와 context 생성
             search_context = ""
