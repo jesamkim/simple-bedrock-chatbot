@@ -199,7 +199,7 @@ def init_conversationchain(
     return conversation
 
 
-def get_url_content(url: str, max_length: int = 1000) -> str:
+def get_url_content(url: str, max_length: int) -> str:
     try:
         response = requests.get(url)
         soup = BeautifulSoup(response.text, "html.parser")
@@ -392,7 +392,7 @@ def main() -> None:
             # URL 내용을 가져와 context 생성
             search_context = ""
             for url in top_urls:
-                content = get_url_content(url, max_length=1000) # max_length 매개변수 전달
+                content = get_url_content(url, max_length=3000) # max_length 매개변수 전달
                 search_context += f"URL: {url}\n{content}\n\n"
 
             # Claude에게 context 정보와 함께 prompt 전달
