@@ -9,10 +9,10 @@ SEARCH_ENGINE_ID = "YOUR_GOOGLE_ENGINE_ID"
 
 def google_search(query: str) -> List[str]:
     """
-    주어진 쿼리에 대해 Google 검색을 수행하고 상위 3개 결과의 내용을 반환합니다.
+    주어진 쿼리에 대해 Google 검색을 수행하고 상위 5개 결과의 내용을 반환합니다.
     """
     service = build("customsearch", "v1", developerKey=API_KEY)
-    result = service.cse().list(q=query, cx=SEARCH_ENGINE_ID, num=3).execute()
+    result = service.cse().list(q=query, cx=SEARCH_ENGINE_ID, num=5).execute()
 
     summaries = []
     for item in result.get("items", []):
