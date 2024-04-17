@@ -60,10 +60,19 @@ def set_page_config() -> None:
     """
     Streamlit 페이지 설정을 초기화합니다.
     """
-    st.set_page_config(page_title="🤖 Chat with Bedrock", layout="wide")
+    st.set_page_config(page_title="Claude Chat with Bedrock", layout="wide")
     st.title("Amazon Bedrock Chatbot demo")
     st.caption("- 이미지 업로드와 Google Search를 함께 사용하지 마세요. 답변이 이상해집니다.")
     st.caption("- model: Claude 3 sonnet")
+    
+    # 모바일 브라우저에서 전체화면 모드 활성화
+    st.markdown(
+        """
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def get_sidebar_params() -> Tuple[float, float, int, int, int, bool]:
