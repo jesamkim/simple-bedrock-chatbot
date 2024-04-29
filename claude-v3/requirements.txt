@@ -1,5 +1,5 @@
-langchain
-langchain_aws
-langchain_community
+langchain==0.1.16
+langchain_aws==0.1.2
+langchain_community==0.0.34
 streamlit==1.32.0
 boto3
