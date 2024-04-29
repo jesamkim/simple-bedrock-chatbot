@@ -6,7 +6,8 @@ from typing import List, Tuple, Union
 
 import streamlit as st
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
-from langchain_community.chat_models import BedrockChat
+#from langchain_community.chat_models import BedrockChat
+from langchain_aws import ChatBedrock
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.chains import ConversationChain
@@ -162,7 +163,7 @@ def init_conversationchain(
         "system": SYSTEM_PROMPT,
     }
 
-    llm = BedrockChat(
+    llm = ChatBedrock(
         region_name="us-west-2", ## Bedrock Claude v3 리전
         model_id=MODEL_ID, 
         model_kwargs=model_kwargs, 
