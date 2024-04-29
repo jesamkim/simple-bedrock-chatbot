@@ -1,5 +1,5 @@
 # Amazon Bedrock의 Claude 3 모델을 활용한 간단한 Chatbot
-Amazon Bedrock (Claude 3 Sonnet) &amp; LangChain BedrockChat &amp; Streamlit 으로 구성하는 간단 챗봇 어플리케이션
+Amazon Bedrock (Claude 3 Sonnet) &amp; LangChain &amp; Streamlit 으로 구성하는 간단 챗봇 어플리케이션
 
 ## 환경
 - AWS Cloud9에서 수행하는 것을 권장드립니다.
