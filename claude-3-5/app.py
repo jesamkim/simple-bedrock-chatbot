@@ -165,16 +165,24 @@ def init_conversationchain(
     return conversation
 
 def generate_response(
-    conversation: RunnableWithMessageHistory, 
+    conversation: RunnableWithMessageHistory,
     input: Union[str, List[dict]]
 ) -> str:
     with st.chat_message("assistant"):
         stream_handler = StreamHandler(st.empty())
-        response = conversation.invoke(
-            {"input": input}, 
-            {"callbacks": [stream_handler]}
-        )
-        return stream_handler.text
+        try:
+            response = conversation.invoke(
+                {"input": input},
+                {"callbacks": [stream_handler]}
+            )
+            return stream_handler.text
+        except Exception as e:
+            if "ThrottlingException" in str(e):
+                error_message = "요청을 처리하지 못했습니다. 잠시 후 다시 말씀해 주세요. 🙏"
+            else:
+                error_message = "죄송합니다. 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
+            stream_handler.container.markdown(error_message)
+            return error_message
 
 def new_chat() -> None:
     st.session_state["messages"] = [INIT_MESSAGE]
