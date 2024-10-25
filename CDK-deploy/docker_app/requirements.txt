@@ -1,9 +1,7 @@
-langchain==0.1.16
-langchain_aws==0.1.2
-langchain_community==0.0.34
-streamlit==1.32.0
+streamlit
 boto3
-streamlit-cognito-auth==1.2.0
-google-api-python-client
-bs4
-nltk
+python-dotenv
+langchain
+langchain-aws
+langchain-community
+langchain-core
