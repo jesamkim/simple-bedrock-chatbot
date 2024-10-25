@@ -3,7 +3,7 @@ Amazon Bedrock (Claude 3.5 Sonnet) &amp; LangChain &amp; Streamlit 으로 구성
 
 ## 환경
 - [중요] AWS 계정에서 anthropic.claude-3-5-sonnet-20240620-v1:0 (Claude 3.5 Sonnet v1) 모델이 us-east-1, us-east-2, us-west-2, ap-northeast-1, ap-northeast-2 리전에 모두 Access Granted 되어 있어야 합니다.
-- 각 Claude 3.5 Sonnet 의 RPM (Request per Minute) Quota 가 작은 경우 위의 5개 Region을 순차적으로 순환하면서 API Call 을 수행 합니다.
+- 각 Claude 3.5 Sonnet 의 RPM (Request per Minute) Quota 가 적게 할당된 환경을 위해, 이 챗봇은 위의 5개 Region을 순차적으로 순환하면서 모델 API Call 을 수행 합니다.
 
 
 ## 챗봇 실행을 위한 패키지 설치
