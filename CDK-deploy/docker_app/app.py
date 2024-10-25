@@ -32,7 +32,7 @@ CLAUDE_PROMPT = ChatPromptTemplate.from_messages(
 
 INIT_MESSAGE = {
     "role": "assistant",
-    "content": "안녕하세요! 저는 JAVIS-3.5 입니다. 무엇을 도와드릴까요 ?",
+    "content": "안녕하세요! 저는 Claude 3.5 Sonnet 입니다. 무엇을 도와드릴까요 ?",
 }
 
 class StreamHandler(BaseCallbackHandler):
@@ -45,8 +45,8 @@ class StreamHandler(BaseCallbackHandler):
         self.container.markdown(self.text)
 
 def set_page_config() -> None:
-    st.set_page_config(page_title="JAVIS-3.5", layout="wide")
-    st.title("JAVIS-3.5")
+    st.set_page_config(page_title="Bedrock Chatbot", layout="wide")
+    st.title("Claude 3.5 Sonnet v1")
 
 def get_sidebar_params() -> Tuple[float, float, int, int, int, str]:
     with st.sidebar:
