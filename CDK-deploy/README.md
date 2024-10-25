@@ -20,11 +20,10 @@ docker_app 폴더에서 Streamlit 앱을 찾을 수 있습니다. 로컬에서 �
 
 ### Prerequisites:
 
-* python 3.8
+* python 3.9
 * docker
 * use a Chrome browser for development
 * [중요] AWS 계정에서 `anthropic.claude-3-5-sonnet-20240620-v1:0` (Claude 3.5 Sonnet v1) 모델이 <b>us-east-1, us-east-2, us-west-2, ap-northeast-1, ap-northeast-2 리전</b>에 Access Granted 되어 있어야 합니다.
-* 이 데모를 생성하는 데 사용된 환경은 Amazon Linux 2023이 설치된 AWS Cloud9 m5.large 인스턴스이지만 다른 구성에서도 작동합니다.
 
 ## 배포 방법 (AWS Cloud9 환경 추천) :
 
@@ -50,16 +49,7 @@ pip install -r requirements.txt
 
 ```
 
-### 3. Google 검색을 위한 API 설정
-[필수] Google 검색 기능을 사용하기 위해 각자 사전에 발급받은 <b>[GOOGLE_ENGINE_ID](https://programmablesearchengine.google.com/controlpanel/all?hl=ko)와 [GOOGLE_API_KEY](https://developers.google.com/custom-search/v1/overview?hl=ko) </b>가 필요 합니다.
-`GOOGLE_ENGINE_ID`와 `GOOGLE_API_KEY` 값을 <b>simple-bedrock-chatbot/CDK-deploy/docker_app/search.py</b>에 넣어 수정 후 저장 합니다.
-```
-# Google API 키와 검색 엔진 ID를 환경 변수에서 가져옵니다.
-API_KEY = "YOUR_GOOGLE_API_KEY"
-SEARCH_ENGINE_ID = "YOUR_GOOGLE_ENGINE_ID"
-```
-
-### 4. CDK 템플릿 배포 
+### 3. CDK 템플릿 배포 
 - 배포는 서울 리전에 해도 됩니다.
 - Bedrock Claude 3 모델 access 권한 설정만 us-west-2에 미리 해두시면 됩니다.
 
@@ -72,7 +62,7 @@ cdk deploy
 
 CloudFront 배포 URL을 확인할 수 있습니다.
 
-### 5. 브라우저에서 CloudFront distribution URL에 연결합니다.
+### 4. 브라우저에서 CloudFront distribution URL에 연결합니다.
 ```
 # Output 예시
 Outputs:
@@ -86,9 +76,9 @@ cdk-chatbot-claude3.CloudFrontDistributionURL = xxx2cj9ksuhwvn.cloudfront.net
 
 <br>
 
-## (Optional) Cloud9에서 테스트
+## (Optional) 배포 전 개발 환경에서 테스트
 
-cdk 템플릿을 배포한 후에는 Cloud9에서 바로 Streamlit 앱을 테스트할 수 있습니다.
+cdk 템플릿을 배포한 후에는 VSCode와 같은 개발 환경에서 Streamlit 앱을 먼저 테스트할 수 있습니다.
 도커를 사용할 수 있지만 적절한 권한이 있는 역할을 설정하거나 필요한 Python 디펜던시를 설치한 후 터미널에서 직접 Streamlit 앱을 실행해야 합니다.
 
 Streamlit 앱을 직접 실행하기:
@@ -114,10 +104,7 @@ pip install -r requirements.txt
 streamlit run app.py --server.port 8080
 ```
 
-4. Cloud9에 내장된 브라우저는 세션 쿠키를 보관하지 않아 인증 메커니즘이 제대로 작동하지 않으므로 Cloud9에서 실행 중인 애플리케이션 미리보기/미리 보기 버튼을 클릭하고 새 창에서 브라우저 팝업 버튼을 클릭합니다.
-새 창에 앱이 표시되지 않으면 사이트 간 추적 쿠키를 허용하도록 브라우저를 구성해야 할 수 있습니다.
-
-5. 이제 Streamlit 앱을 수정하여 자신만의 데모를 만들어 보세요!
+4. 이제 Streamlit 앱을 수정하여 자신만의 데모를 만들어 보세요!
 
 ## 몇 가지 제한 사항
 
