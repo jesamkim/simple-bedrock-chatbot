@@ -71,7 +71,7 @@ cdk-chatbot-claude3.CloudFrontDistributionURL = xxx2cj9ksuhwvn.cloudfront.net
 
 
 ## 실행 화면
-![screenshot1](/CDK-deploy/img/screenshot1.png)
+![screenshot1-1](/CDK-deploy/img/screenshot1-1.png)
 
 
 <br>
