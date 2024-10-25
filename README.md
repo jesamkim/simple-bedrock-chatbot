@@ -7,15 +7,9 @@ Amazon Bedrock (Claude 3 Sonnet) &amp; LangChain &amp; Streamlit 으로 구성�
 - 코드 상에서 따로 자격증명을 다루지 않습니다. (aws configure 사전 설정 필요)
 
 
-## langchain 패키지 설치
-```
-git clone https://github.com/langchain-ai/langchain.git
-pip install -e langchain/libs/langchain
-```
-
 ## 챗봇 실행을 위한 패키지 설치
 ```
-pip install -r ./claude-v3/requirements.txt
+pip install -r ./claude-35/requirements.txt -U
 ```
 
 
@@ -25,7 +19,7 @@ pip install -r ./claude-v3/requirements.txt
 streamlit run ./claude-v3/chatbot_app.py --server.port 8080
 ```
 
-![result_01](./img/result_1.png)
+![screenshot1-1](./img/screenshot1-1.png)
 
 
 #### Reference Contents
