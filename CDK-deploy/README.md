@@ -51,7 +51,7 @@ pip install -r requirements.txt
 
 ### 3. CDK 템플릿 배포 
 - 배포는 서울 리전에 해도 됩니다.
-- Bedrock Claude 3 모델 access 권한 설정만 us-west-2에 미리 해두시면 됩니다.
+- Bedrock에서 Claude 3.5 Sonnet 모델의 access 설정만 us-east-1, us-east-2, us-west-2, ap-northeast-2 에 미리 해두시면 됩니다.
 
 ```
 cdk bootstrap
