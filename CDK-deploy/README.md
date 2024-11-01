@@ -23,7 +23,8 @@ docker_app 폴더에서 Streamlit 앱을 찾을 수 있습니다. 로컬에서 �
 * python 3.9
 * docker
 * use a Chrome browser for development
-* [중요] AWS 계정에서 `anthropic.claude-3-5-sonnet-20240620-v1:0` (Claude 3.5 Sonnet v1) 모델이 <b>us-east-1, us-east-2, us-west-2, ap-northeast-1, ap-northeast-2 리전</b>에 모두 Access Granted 되어 있어야 합니다.
+- [중요 #1] AWS 계정에서 anthropic.claude-3-5-sonnet-20241022-v2:0 (Claude 3.5 Sonnet v2) 모델이 us-west-2 리전에 Access Granted 되어 있어야 합니다.
+- [중요 #2] AWS 계정에서 anthropic.claude-3-5-sonnet-20240620-v1:0 (Claude 3.5 Sonnet v1) 모델이 us-east-1, us-east-2, us-west-2, ap-northeast-1, ap-northeast-2 리전에 모두 Access Granted 되어 있어야 합니다.
 
 ## 배포 방법 :
 
