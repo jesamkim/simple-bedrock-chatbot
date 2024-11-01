@@ -10,12 +10,10 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain_core.runnables import RunnableWithMessageHistory
 from langchain.memory import ConversationBufferWindowMemory
-from langchain_community.chat_message_histories import StreamlitChatMessageHistory
-from langchain_core.runnables import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from PIL import Image
 
-REGIONS_CONFIG = [
+REGIONS_CONFIG_V1 = [
     {"region": "us-east-1", "model_id": "us.anthropic.claude-3-5-sonnet-20240620-v1:0"},
     {"region": "ap-northeast-1", "model_id": "anthropic.claude-3-5-sonnet-20240620-v1:0"},
     {"region": "us-east-2", "model_id": "us.anthropic.claude-3-5-sonnet-20240620-v1:0"},
@@ -23,12 +21,14 @@ REGIONS_CONFIG = [
     {"region": "us-west-2", "model_id": "us.anthropic.claude-3-5-sonnet-20240620-v1:0"}
 ]
 
-CLAUDE_PROMPT = ChatPromptTemplate.from_messages(
-    [
-        MessagesPlaceholder(variable_name="history"),
-        MessagesPlaceholder(variable_name="input"),
-    ]
-)
+REGIONS_CONFIG_V2 = [
+    {"region": "us-west-2", "model_id": "us.anthropic.claude-3-5-sonnet-20241022-v2:0"}
+]
+
+CLAUDE_PROMPT = ChatPromptTemplate.from_messages([
+    MessagesPlaceholder(variable_name="history"),
+    MessagesPlaceholder(variable_name="input"),
+])
 
 INIT_MESSAGE = {
     "role": "assistant",
@@ -46,17 +46,24 @@ class StreamHandler(BaseCallbackHandler):
 
 def set_page_config() -> None:
     st.set_page_config(page_title="Bedrock Chatbot", layout="wide")
-    st.title("Claude 3.5 Sonnet v1")
+    st.title("Claude 3.5 Sonnet DEMO")
 
-def get_sidebar_params() -> Tuple[float, float, int, int, int, str]:
+def get_sidebar_params() -> Tuple[float, float, int, int, int, str, str]:
     with st.sidebar:
-        st.markdown("## Inference Parameters")
-        system_prompt = st.text_area(
-            "System Prompt", 
-            "You're a cool assistant, love to respond in Korean.",
-            key=f"{st.session_state['widget_key']}_System_Prompt",
+        st.markdown("## Model Selection")
+        model_version = st.radio(
+            "Choose Model Version",
+            ["Claude 3.5 Sonnet v2 (us-west-2)", "Claude 3.5 Sonnet v1 (Multi-region)"],
+            key=f"{st.session_state['widget_key']}_Model_Version"
         )
         
+        st.markdown("## Inference Parameters")
+        system_prompt = st.text_area(
+            "System Prompt",
+            "You're a cool assistant who loves to respond in Korean. When you're not certain about something, don't guess or make up information. Instead, honestly admit that you don't know.",
+            key=f"{st.session_state['widget_key']}_System_Prompt",
+        )
+
         temperature = st.slider(
             "Temperature",
             min_value=0.0,
@@ -65,6 +72,7 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str]:
             step=0.1,
             key=f"{st.session_state['widget_key']}_Temperature",
         )
+
         with st.container():
             col1, col2 = st.columns(2)
             with col1:
@@ -85,6 +93,7 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str]:
                     step=5,
                     key=f"{st.session_state['widget_key']}_Top-K",
                 )
+
         with st.container():
             col1, col2 = st.columns(2)
             with col1:
@@ -106,7 +115,7 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str]:
                     key=f"{st.session_state['widget_key']}_Memory_Window",
                 )
 
-    return temperature, top_p, top_k, max_tokens, memory_window, system_prompt
+    return temperature, top_p, top_k, max_tokens, memory_window, system_prompt, model_version
 
 def init_conversationchain(
     temperature: float,
@@ -115,11 +124,17 @@ def init_conversationchain(
     max_tokens: int,
     memory_window: int,
     system_prompt: str,
+    model_version: str,
 ) -> RunnableWithMessageHistory:
-    if 'region_index' not in st.session_state:
-        st.session_state.region_index = 0
     
-    current_config = REGIONS_CONFIG[st.session_state.region_index]
+    if model_version == "Claude 3.5 Sonnet v2 (us-west-2)":
+        current_config = REGIONS_CONFIG_V2[0]
+    else:
+        if 'region_index' not in st.session_state:
+            st.session_state.region_index = 0
+        current_config = REGIONS_CONFIG_V1[st.session_state.region_index]
+        if model_version == "Claude 3.5 Sonnet v1 (Multi-region)":
+            st.session_state.region_index = (st.session_state.region_index + 1) % len(REGIONS_CONFIG_V1)
     
     model_kwargs = {
         "temperature": temperature,
@@ -130,38 +145,35 @@ def init_conversationchain(
     
     if system_prompt != "":
         model_kwargs["system"] = system_prompt
-
+        
     llm = ChatBedrock(
         model_id=current_config["model_id"],
         model_kwargs=model_kwargs,
         streaming=True,
         region_name=current_config["region"]
     )
-
+    
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         MessagesPlaceholder(variable_name="history"),
         ("human", "{input}")
     ])
-
+    
     chain = prompt | llm
-
+    
     def get_session_history():
         return StreamlitChatMessageHistory()
-
+    
     conversation = RunnableWithMessageHistory(
         runnable=chain,
         get_session_history=get_session_history,
         input_messages_key="input",
         history_messages_key="history"
     )
-
+    
     if "messages" not in st.session_state:
         st.session_state.messages = [INIT_MESSAGE]
-
-    # 다음 리전으로 순환
-    st.session_state.region_index = (st.session_state.region_index + 1) % len(REGIONS_CONFIG)
-
+        
     return conversation
 
 def generate_response(
@@ -197,19 +209,16 @@ def display_chat_messages(uploaded_files: List[st.runtime.uploaded_file_manager.
                     num_cols = 10
                     cols = st.columns(num_cols)
                     i = 0
-
                     for image_id in message["images"]:
                         for uploaded_file in uploaded_files:
                             if image_id == uploaded_file.file_id:
                                 img = Image.open(uploaded_file)
-
                                 with cols[i]:
                                     st.image(img, caption="", width=75)
-                                    i += 1
-
+                                i += 1
                                 if i >= num_cols:
                                     i = 0
-
+            
             if message["role"] == "user":
                 if isinstance(message["content"], str):
                     st.markdown(message["content"])
@@ -217,7 +226,7 @@ def display_chat_messages(uploaded_files: List[st.runtime.uploaded_file_manager.
                     st.markdown(message["content"]["input"][0]["content"][0]["text"])
                 else:
                     st.markdown(message["content"][0]["text"])
-
+            
             if message["role"] == "assistant":
                 if isinstance(message["content"], str):
                     st.markdown(message["content"])
@@ -225,9 +234,6 @@ def display_chat_messages(uploaded_files: List[st.runtime.uploaded_file_manager.
                     st.markdown(message["content"]["response"])
 
 def langchain_messages_format(messages: List[Union[AIMessage, HumanMessage, dict]]) -> List[Union[AIMessage, HumanMessage]]:
-    """
-    Format the messages for the LangChain conversation chain.
-    """
     formatted_messages = []
     for message in messages:
         if isinstance(message, (AIMessage, HumanMessage)):
@@ -245,47 +251,36 @@ def langchain_messages_format(messages: List[Union[AIMessage, HumanMessage, dict
                 formatted_messages.append(HumanMessage(content=message["content"]))
     return formatted_messages
 
-
 def main() -> None:
-    """
-    Main function to run the Streamlit app.
-    """
     set_page_config()
-
+    
     # Initialize session state variables
     if "widget_key" not in st.session_state:
         st.session_state["widget_key"] = str(random.randint(1, 1000000))
-    
     if "messages" not in st.session_state:
         st.session_state.messages = [INIT_MESSAGE]
-    
     if "langchain_messages" not in st.session_state:
         st.session_state.langchain_messages = []
-        
     if "file_uploader_key" not in st.session_state:
         st.session_state.file_uploader_key = 0
 
-    # Add a button to start a new chat
     st.sidebar.button("New Chat", on_click=new_chat, type="primary")
     
-    temperature, top_p, top_k, max_tokens, memory_window, system_prompt = get_sidebar_params()
-    conv_chain = init_conversationchain(temperature, top_p, top_k, max_tokens, memory_window, system_prompt)
-
-    # Image uploader
+    temperature, top_p, top_k, max_tokens, memory_window, system_prompt, model_version = get_sidebar_params()
+    
+    conv_chain = init_conversationchain(temperature, top_p, top_k, max_tokens, memory_window, system_prompt, model_version)
+    
     uploaded_files = st.file_uploader(
         "Choose an image",
         type=["jpg", "jpeg", "png"],
         accept_multiple_files=True,
         key=st.session_state["file_uploader_key"],
     )
-
-    # Display chat messages
+    
     display_chat_messages(uploaded_files)
-
-    # User-provided prompt
+    
     prompt = st.chat_input()
-
-    # Get images from previous messages
+    
     message_images_list = [
         image_id
         for message in st.session_state.messages
@@ -294,67 +289,64 @@ def main() -> None:
         and message["images"]
         for image_id in message["images"]
     ]
-
-    # Show image in corresponding chat box
+    
+    # Initialize content_images before using it
+    content_images = []
     uploaded_file_ids = []
+    
     if uploaded_files and len(message_images_list) < len(uploaded_files):
         with st.chat_message("user"):
             num_cols = 10
             cols = st.columns(num_cols)
             i = 0
-            content_images = []
-
             for uploaded_file in uploaded_files:
                 if uploaded_file.file_id not in message_images_list:
                     uploaded_file_ids.append(uploaded_file.file_id)
                     img = Image.open(uploaded_file)
                     with BytesIO() as output_buffer:
                         img.save(output_buffer, format=img.format)
-                        content_image = base64.b64encode(output_buffer.getvalue()).decode(
-                            "utf8"
-                        )
-                    content_images.append(content_image)
+                        content_image = base64.b64encode(output_buffer.getvalue()).decode("utf8")
+                        content_images.append(content_image)
                     with cols[i]:
                         st.image(img, caption="", width=75)
-                        i += 1
+                    i += 1
                     if i >= num_cols:
                         i = 0
-
-            if prompt:
-                prompt_text = {"type": "text", "text": prompt}
-                prompt_new = [prompt_text]
-                for content_image in content_images:
-                    prompt_image = {
-                        "type": "image",
-                        "source": {"type": "base64", "media_type": "image/jpeg", "data": content_image},
-                    }
-                    prompt_new.append(prompt_image)
-                st.session_state.messages.append(
-                    {"role": "user", "content": prompt_new, "images": uploaded_file_ids}
-                )
-                st.markdown(prompt)
-
+    
+    if prompt and content_images:
+        prompt_text = {"type": "text", "text": prompt}
+        prompt_new = [prompt_text]
+        for content_image in content_images:
+            prompt_image = {
+                "type": "image",
+                "source": {"type": "base64", "media_type": "image/jpeg", "data": content_image},
+            }
+            prompt_new.append(prompt_image)
+        
+        st.session_state.messages.append(
+            {"role": "user", "content": prompt_new, "images": uploaded_file_ids}
+        )
+        st.markdown(prompt)
+    
     elif prompt:
         prompt_text = {"type": "text", "text": prompt}
         prompt_new = [prompt_text]
         st.session_state.messages.append({"role": "user", "content": prompt_new})
         with st.chat_message("user"):
             st.markdown(prompt)
-
-    # Modify langchain_messages format if not empty
+    
     if st.session_state.langchain_messages:
         st.session_state.langchain_messages = langchain_messages_format(
             st.session_state.langchain_messages
         )
-
-    # main 함수의 응답 생성 부분
+    
     if st.session_state.messages[-1]["role"] != "assistant":
         response = generate_response(
             conv_chain, [{"role": "user", "content": prompt_new}]
         )
+        
         message = {"role": "assistant", "content": response}
         st.session_state.messages.append(message)
-
 
 if __name__ == "__main__":
     main()
