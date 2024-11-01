@@ -313,7 +313,7 @@ def main() -> None:
                     if i >= num_cols:
                         i = 0
     
-    if prompt and content_images:
+    if prompt:
         prompt_text = {"type": "text", "text": prompt}
         prompt_new = [prompt_text]
         for content_image in content_images:
