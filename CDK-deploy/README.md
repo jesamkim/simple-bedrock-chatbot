@@ -1,6 +1,6 @@
 # AWS CDK로 Bedrock 챗봇 배포하기
 
-Amazon Bedrock의 Claude 3.5 Sonnet 모델을 활용한 챗봇을 AWS 클라우드 환경에 자동으로 배포하는 CDK 템플릿입니다.
+Amazon Bedrock의 Claude 3.5 Sonnet 모델을 활용한 문서 기반 Q&A 챗봇을 AWS 클라우드 환경에 자동으로 배포하는 CDK 템플릿입니다.
 
 ## 아키텍처 개요
 
@@ -12,6 +12,22 @@ Amazon Bedrock의 Claude 3.5 Sonnet 모델을 활용한 챗봇을 AWS 클라우�
 - **로드밸런싱**: Application Load Balancer (ALB)
 - **콘텐츠 전송**: CloudFront
 - **네트워크**: VPC, 보안 그룹, NAT Gateway
+
+### 챗봇 주요 기능
+1. **문서 처리 기능**
+   - 다양한 문서 형식 지원 (PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, CSV, TXT, MD, HTML)
+   - 실시간 문서 업로드 및 텍스트 추출
+   - 문서 기반 Q&A 수행
+
+2. **Amazon Bedrock 통합**
+   - Claude 3.5 Sonnet v2 모델 사용
+   - 스트리밍 방식의 실시간 응답
+   - 한국어 응답 최적화
+
+3. **사용자 인터페이스**
+   - 직관적인 문서 업로드
+   - 실시간 채팅 인터페이스
+   - 모델 파라미터 조정 기능
 
 ### 아키텍처 특징
 1. **고가용성**
@@ -39,9 +55,14 @@ Amazon Bedrock의 Claude 3.5 Sonnet 모델을 활용한 챗봇을 AWS 클라우�
 ### Bedrock 모델 접근 권한
 - [필수] Claude 3.5 Sonnet v2 (us-west-2 리전)
   - 모델 ID: anthropic.claude-3-5-sonnet-20241022-v2:0
-- [필수] Claude 3.5 Sonnet v1 (다중 리전)
-  - 모델 ID: anthropic.claude-3-5-sonnet-20240620-v1:0
-  - 필요 리전: us-east-1, us-east-2, us-west-2, ap-northeast-1, ap-northeast-2
+
+### 필요한 IAM 권한
+- Amazon Bedrock 관련:
+  - `bedrock:InvokeModel`
+  - `bedrock:InvokeModelWithResponseStream`
+- ECS/Fargate 관련 권한
+- CloudFront 관련 권한
+- ALB 관련 권한
 
 ## 배포 가이드
 
@@ -106,6 +127,24 @@ pip install -r requirements.txt
 streamlit run app.py --server.port 8080
 ```
 
+## 챗봇 사용 방법
+
+1. **문서 업로드**
+   - 지원되는 파일 형식 중 하나를 선택하여 업로드
+   - 업로드 성공 시 알림 메시지 확인
+
+2. **파라미터 설정**
+   - Temperature: 응답의 창의성 조절 (0.0 ~ 1.0)
+   - Top-P: 토큰 샘플링 확률 조절
+   - Top-K: 고려할 최상위 토큰 수 설정
+   - Max Token: 최대 응답 길이 설정
+   - Memory Window: 대화 기억 범위 설정
+
+3. **대화하기**
+   - 업로드된 문서 내용에 대해 질문 입력
+   - 실시간 스트리밍 방식으로 답변 확인
+   - 새로운 문서로 시작하려면 'New Chat' 버튼 클릭
+
 ## 보안 고려사항
 
 ### 현재 구현된 보안 기능
@@ -127,6 +166,23 @@ streamlit run app.py --server.port 8080
 3. **DDoS 보호**
    - AWS Shield 구성 검토
    - CloudFront 보안 헤더 설정
+
+4. **문서 처리 보안**
+   - 업로드된 문서의 안전한 처리
+   - 임시 파일의 적절한 삭제
+   - 파일 크기 제한 설정
+
+## 스크린샷
+
+### 챗봇 실행 화면
+문서 업로드 및 Q&A 인터페이스:
+
+![Chatbot Screenshot](../img/screenshot2.png)
+
+### 배포 아키텍처
+AWS 클라우드 환경의 구성:
+
+![Architecture Screenshot](img/archi_streamlit_cdk.png)
 
 ## 참조
 - [Streamlit CDK Fargate](https://github.com/tzaffi/streamlit-cdk-fargate.git)

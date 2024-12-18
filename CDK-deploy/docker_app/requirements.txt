@@ -1,7 +1,10 @@
 streamlit
-boto3
-python-dotenv
 langchain
-langchain-aws
-langchain-community
-langchain-core
+langchain_community
+langchain_aws
+boto3
+python-docx
+PyPDF2
+pandas
+openpyxl
+python-pptx
