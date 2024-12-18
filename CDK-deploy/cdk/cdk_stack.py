@@ -75,8 +75,8 @@ class CdkStack(Stack):
         fargate_task_definition = ecs.FargateTaskDefinition(
             self,
             f"{prefix}WebappTaskDef",
-            memory_limit_mib=512,
-            cpu=256,
+            memory_limit_mib=2048,  # 메모리를 2GB로 증가
+            cpu=1024,  # CPU를 1 vCPU로 증가
         )
 
         # Build Dockerfile from local folder and push to ECR
