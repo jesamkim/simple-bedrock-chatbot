@@ -1,0 +1,10 @@
+streamlit
+langchain
+langchain_community
+langchain_aws
+boto3
+python-docx
+PyPDF2
+pandas
+openpyxl
+python-pptx
