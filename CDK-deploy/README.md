@@ -179,10 +179,6 @@ streamlit run app.py --server.port 8080
 
 ![Chatbot Screenshot](../img/screenshot2.png)
 
-### 배포 아키텍처
-AWS 클라우드 환경의 구성:
-
-![Architecture Screenshot](img/archi_streamlit_cdk.png)
 
 ## 참조
 - [Streamlit CDK Fargate](https://github.com/tzaffi/streamlit-cdk-fargate.git)
