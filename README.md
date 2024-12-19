@@ -23,7 +23,7 @@ Amazon Bedrock을 활용한 문서 기반 Q&A 챗봇 프로젝트입니다.
 
 ### Amazon Bedrock 특징
 - **고성능 LLM 액세스**: 
-  - Claude 3.5 Sonnet과 Nova Pro의 강력한 자연어 처리 능력 활용
+  - Claude 3.5 Sonnet v2 와 Nova Pro 1.0의 강력한 자연어 처리 능력 활용
   - 문서 내용에 대한 정확한 이해와 관련 정보 추출
   - 맥락을 고려한 응답 생성
 - **보안 및 규정 준수**:
@@ -86,8 +86,8 @@ streamlit run chatbot.py --server.port 8080
 1. 웹 브라우저에서 `http://localhost:8080` 접속
 
 2. 사이드바의 "Model Selection"에서 원하는 모델 선택
-   - **Claude 3.5 Sonnet**: 높은 정확도와 문맥 이해력
-   - **Nova Pro**: 빠른 응답 속도와 효율적인 처리
+   - **Claude 3.5 Sonnet v2**: 높은 정확도와 문맥 이해력
+   - **Nova Pro 1.0**: 빠른 응답 속도와 효율적인 처리
 
 3. 사이드바의 "Document Upload" 섹션에서 문서 파일 업로드
    - 지원되는 모든 형식의 파일 업로드 가능
@@ -98,8 +98,8 @@ streamlit run chatbot.py --server.port 8080
    - Top-P: 토큰 샘플링 확률 조절
    - Top-K: 고려할 최상위 토큰 수 설정
    - Max Token: 최대 응답 길이 설정 (모델별 상이)
-     - Claude 3.5 Sonnet: 최대 4,096 토큰
-     - Nova Pro: 최대 5,000 토큰
+     - Claude 3.5 Sonnet v2: 최대 4,096 토큰
+     - Nova Pro 1.0: 최대 5,000 토큰
    - Memory Window: 대화 기억 범위 설정
 
 5. 채팅 입력창에 질문 입력
@@ -145,7 +145,7 @@ streamlit run chatbot.py --server.port 8080
    - 적절한 IAM 역할 또는 사용자 생성
 
 3. 리전 설정
-   - Claude 3.5 Sonnet v2와 Nova Pro는 us-west-2 리전에서 사용 가능
+   - Claude 3.5 Sonnet v2와 Nova Pro 1.0 은 us-west-2 리전으로 사용
    - AWS CLI 또는 환경 변수를 통한 리전 설정
 
 4. 자격 증명 설정
@@ -173,15 +173,15 @@ export AWS_DEFAULT_REGION=us-west-2
    - 적절한 IAM 권한 필요
 
 2. 지원되는 리전 확인
-   - Claude 3.5 Sonnet v2와 Nova Pro는 us-west-2 리전에서 사용
+   - Claude 3.5 Sonnet v2와 Nova Pro 1.0 은 us-west-2 리전으로 사용
 
 3. 파일 크기 제한
    - 대용량 파일의 경우 처리 시간이 길어질 수 있음
    - 매우 큰 파일은 분할 처리 권장
 
 4. 모델별 특성 이해
-   - Claude 3.5 Sonnet: 더 정확한 문맥 이해와 응답 생성
-   - Nova Pro: 빠른 응답 속도, 효율적인 처리
+   - Claude 3.5 Sonnet v2: 더 정확한 문맥 이해와 응답 생성
+   - Nova Pro 1.0: 빠른 응답 속도, 효율적인 처리
 
 ## 스크린샷
 
