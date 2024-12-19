@@ -185,7 +185,7 @@ streamlit run app.py --server.port 8080
 ## 스크린샷
 
 ### 챗봇 실행 화면
-문서 업로드 및 Q&A 인터페이스:
+모델 선택, 문서 업로드 및 Q&A 챗봇 인터페이스:
 
 ![Chatbot Screenshot](../img/screenshot2.png)
 
