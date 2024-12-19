@@ -80,7 +80,8 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str]:
         uploaded_file = st.file_uploader(
             "Upload a document",
             type=SUPPORTED_FORMATS,
-            help="지원되는 파일 형식: pdf, doc, docx, md, ppt, pptx, txt, html, csv, xls, xlsx"
+            help="지원되는 파일 형식: pdf, doc, docx, md, ppt, pptx, txt, html, csv, xls, xlsx",
+            key=f"{st.session_state['widget_key']}_file_uploader"  # widget_key와 연동
         )
 
         st.markdown("## Inference Parameters")
@@ -307,6 +308,8 @@ def generate_response(
 
 def new_chat() -> None:
     """새로운 대화 시작"""
+    # widget_key를 새로 생성하여 file_uploader를 포함한 모든 위젯 초기화
+    st.session_state["widget_key"] = str(random.randint(1, 1000000))
     st.session_state.messages = []
     st.session_state.chat_history.clear()
     st.session_state.nova_messages = []
