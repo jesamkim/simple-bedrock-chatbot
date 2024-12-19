@@ -1,6 +1,6 @@
 # AWS CDK로 Bedrock 챗봇 배포하기
 
-Amazon Bedrock의 Claude 3.5 Sonnet 모델을 활용한 문서 기반 Q&A 챗봇을 AWS 클라우드 환경에 자동으로 배포하는 CDK 템플릿입니다.
+Amazon Bedrock의 Claude 3.5 Sonnet과 Nova Pro 1.0 모델을 활용한 문서 기반 Q&A 챗봇을 AWS 클라우드 환경에 자동으로 배포하는 CDK 템플릿입니다.
 
 ## 아키텍처 개요
 
@@ -20,7 +20,9 @@ Amazon Bedrock의 Claude 3.5 Sonnet 모델을 활용한 문서 기반 Q&A 챗봇
    - 문서 기반 Q&A 수행
 
 2. **Amazon Bedrock 통합**
-   - Claude 3.5 Sonnet v2 모델 사용
+   - **모델 선택 기능**
+     - Claude 3.5 Sonnet v2: 높은 정확도와 문맥 이해력
+     - Nova Pro 1.0: 빠른 응답 속도와 효율적인 처리
    - 스트리밍 방식의 실시간 응답
    - 한국어 응답 최적화
 
@@ -28,6 +30,7 @@ Amazon Bedrock의 Claude 3.5 Sonnet 모델을 활용한 문서 기반 Q&A 챗봇
    - 직관적인 문서 업로드
    - 실시간 채팅 인터페이스
    - 모델 파라미터 조정 기능
+   - 모델 선택 옵션
 
 ### 아키텍처 특징
 1. **고가용성**
@@ -53,8 +56,9 @@ Amazon Bedrock의 Claude 3.5 Sonnet 모델을 활용한 문서 기반 Q&A 챗봇
 - AWS CLI 구성 및 적절한 권한
 
 ### Bedrock 모델 접근 권한
-- [필수] Claude 3.5 Sonnet v2 (us-west-2 리전)
-  - 모델 ID: anthropic.claude-3-5-sonnet-20241022-v2:0
+- [필수] 다음 모델 중 하나 이상에 대한 접근 권한 (us-west-2 리전)
+  - Claude 3.5 Sonnet v2 (모델 ID: anthropic.claude-3-5-sonnet-20241022-v2:0)
+  - Nova Pro v1 (모델 ID: amazon.nova-pro-v1:0)
 
 ### 필요한 IAM 권한
 - Amazon Bedrock 관련:
@@ -129,18 +133,24 @@ streamlit run app.py --server.port 8080
 
 ## 챗봇 사용 방법
 
-1. **문서 업로드**
+1. **모델 선택**
+   - Claude 3.5 Sonnet v2: 복잡한 문맥 이해가 필요한 경우
+   - Nova Pro 1.0: 빠른 응답이 필요한 경우
+
+2. **문서 업로드**
    - 지원되는 파일 형식 중 하나를 선택하여 업로드
    - 업로드 성공 시 알림 메시지 확인
 
-2. **파라미터 설정**
+3. **파라미터 설정**
    - Temperature: 응답의 창의성 조절 (0.0 ~ 1.0)
    - Top-P: 토큰 샘플링 확률 조절
    - Top-K: 고려할 최상위 토큰 수 설정
    - Max Token: 최대 응답 길이 설정
+     - Claude 3.5 Sonnet: 최대 4,096 토큰
+     - Nova Pro: 최대 5,000 토큰
    - Memory Window: 대화 기억 범위 설정
 
-3. **대화하기**
+4. **대화하기**
    - 업로드된 문서 내용에 대해 질문 입력
    - 실시간 스트리밍 방식으로 답변 확인
    - 새로운 문서로 시작하려면 'New Chat' 버튼 클릭

@@ -7,7 +7,7 @@ import pandas as pd
 
 import streamlit as st
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
-from langchain_aws import ChatBedrock
+from langchain_aws import ChatBedrock, ChatBedrockConverse
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain_core.runnables import RunnableWithMessageHistory
@@ -15,7 +15,20 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import boto3
 
 REGION = "us-west-2"
-MODEL_ID = "us.anthropic.claude-3-5-sonnet-20241022-v2:0"
+MODELS = {
+    "Claude 3.5 Sonnet v2": {
+        "id": "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
+        "class": ChatBedrock,
+        "use_model_kwargs": True,
+        "max_tokens": 4096
+    },
+    "Nova Pro 1.0": {
+        "id": "us.amazon.nova-pro-v1:0",
+        "class": None,  # 직접 boto3 client 사용
+        "use_model_kwargs": False,
+        "max_tokens": 5000
+    }
+}
 
 SUPPORTED_FORMATS = ['pdf', 'doc', 'docx', 'md', 'ppt', 'pptx', 'txt', 'html', 'csv', 'xls', 'xlsx']
 
@@ -24,10 +37,11 @@ CLAUDE_PROMPT = ChatPromptTemplate.from_messages([
     MessagesPlaceholder(variable_name="input"),
 ])
 
-INIT_MESSAGE = {
-    "role": "assistant",
-    "content": "안녕하세요! 저는 Claude 3.5 Sonnet v2 입니다. 문서를 업로드하시면 문서 내용을 기반으로 답변해드리겠습니다. 무엇을 도와드릴까요?",
-}
+def get_init_message(model_name: str) -> dict:
+    return {
+        "role": "assistant",
+        "content": f"안녕하세요! 저는 AI 도우미 입니다. 문서를 업로드하시면 문서 내용을 기반으로 답변해드리겠습니다. 무엇을 도와드릴까요?",
+    }
 
 class StreamHandler(BaseCallbackHandler):
     def __init__(self, container: st.container) -> None:
@@ -39,11 +53,19 @@ class StreamHandler(BaseCallbackHandler):
         self.container.markdown(self.text)
 
 def set_page_config() -> None:
-    st.set_page_config(page_title="Amazon Bedrock Chatbot with Knowledge Base", layout="wide")
-    st.title("Claude 3.5 Sonnet with Document Q&A")
+    st.set_page_config(page_title="Bedrock Chatbot", layout="wide")
+    st.title("Bedrock Chatbot with Document Q&A")
 
 def get_sidebar_params() -> Tuple[float, float, int, int, int, str]:
     with st.sidebar:
+        st.markdown("## Model Selection")
+        model_name = st.radio(
+            "Choose a model",
+            options=list(MODELS.keys()),
+            index=0,
+            key=f"{st.session_state['widget_key']}_Model"
+        )
+        
         st.markdown("## Document Upload")
         uploaded_file = st.file_uploader(
             "Upload a document",
@@ -91,11 +113,13 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str]:
         with st.container():
             col1, col2 = st.columns(2)
             with col1:
+                # 선택된 모델에 따라 max_tokens 슬라이더 범위 조정
+                model_max_tokens = MODELS[model_name]["max_tokens"]
                 max_tokens = st.slider(
                     "Max Token",
                     min_value=0,
-                    max_value=4096,
-                    value=4096,
+                    max_value=model_max_tokens,
+                    value=model_max_tokens,
                     step=8,
                     key=f"{st.session_state['widget_key']}_Max_Token",
                 )
@@ -109,7 +133,7 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str]:
                     key=f"{st.session_state['widget_key']}_Memory_Window",
                 )
 
-    return temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file
+    return temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name
 
 def process_text_based_file(file_path: str) -> str:
     """텍스트 기반 파일(txt, md, html) 처리"""
@@ -188,15 +212,13 @@ def init_conversationchain(
     max_tokens: int,
     memory_window: int,
     system_prompt: str,
+    model_name: str,
     context: str = None
-) -> RunnableWithMessageHistory:
+) -> Union[RunnableWithMessageHistory, boto3.client]:
 
-    model_kwargs = {
-        "temperature": temperature,
-        "top_p": top_p,
-        "top_k": top_k,
-        "max_tokens": max_tokens,
-    }
+    model_info = MODELS[model_name]
+    model_id = model_info["id"]
+    use_model_kwargs = model_info["use_model_kwargs"]
 
     # 문서 컨텍스트가 있는 경우 시스템 프롬프트에 추가
     if context:
@@ -204,47 +226,89 @@ def init_conversationchain(
     else:
         full_system_prompt = system_prompt
 
-    model_kwargs["system"] = full_system_prompt
+    if use_model_kwargs:  # ChatBedrock (Claude 3.5 Sonnet)
+        model_kwargs = {
+            "temperature": temperature,
+            "top_p": top_p,
+            "top_k": top_k,
+            "max_tokens": max_tokens,
+            "system": full_system_prompt
+        }
+        llm = ChatBedrock(
+            model_id=model_id,
+            model_kwargs=model_kwargs,
+            streaming=True,
+            region_name=REGION
+        )
 
-    llm = ChatBedrock(
-        model_id=MODEL_ID,
-        model_kwargs=model_kwargs,
-        streaming=True,
-        region_name=REGION
-    )
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", full_system_prompt),
+            MessagesPlaceholder(variable_name="history"),
+            ("human", "{input}")
+        ])
 
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", full_system_prompt),
-        MessagesPlaceholder(variable_name="history"),
-        ("human", "{input}")
-    ])
+        chain = prompt | llm
 
-    chain = prompt | llm
+        def get_session_history():
+            return StreamlitChatMessageHistory()
 
-    def get_session_history():
-        return StreamlitChatMessageHistory()
+        conversation = RunnableWithMessageHistory(
+            runnable=chain,
+            get_session_history=get_session_history,
+            input_messages_key="input",
+            history_messages_key="history"
+        )
 
-    conversation = RunnableWithMessageHistory(
-        runnable=chain,
-        get_session_history=get_session_history,
-        input_messages_key="input",
-        history_messages_key="history"
-    )
-
-    return conversation
+        return conversation
+    else:  # Nova Pro - 직접 boto3 client 사용
+        return boto3.client("bedrock-runtime", region_name=REGION)
 
 def generate_response(
-    conversation: RunnableWithMessageHistory,
+    conversation: Union[RunnableWithMessageHistory, boto3.client],
     input: Union[str, List[dict]]
 ) -> str:
     with st.chat_message("assistant"):
         stream_handler = StreamHandler(st.empty())
         try:
-            response = conversation.invoke(
-                {"input": input},
-                {"callbacks": [stream_handler]}
-            )
-            return stream_handler.text
+            if isinstance(conversation, RunnableWithMessageHistory):  # Claude 3.5 Sonnet
+                response = conversation.invoke(
+                    {"input": input},
+                    {"callbacks": [stream_handler]}
+                )
+                if isinstance(response, str):
+                    stream_handler.container.markdown(response)
+                    return response
+                return stream_handler.text
+            else:  # Nova Pro
+                # 문서 컨텍스트가 있는 경우 첫 번째 user 메시지에 포함
+                system_message = st.session_state[f"{st.session_state['widget_key']}_System_Prompt"]
+                if "document_context" in st.session_state:
+                    system_message = f"{system_message}\n\n참고할 문서 내용:\n\n{st.session_state['document_context']}"
+                
+                messages = [
+                    {"role": "user", "content": [{"text": system_message}]},
+                    {"role": "assistant", "content": [{"text": "알겠습니다. 문서 내용을 참고하여 답변하겠습니다."}]},
+                    {"role": "user", "content": [{"text": input[0]["content"][0]["text"]}]}
+                ]
+                
+                response = conversation.converse_stream(
+                    modelId=MODELS["Nova Pro 1.0"]["id"],
+                    messages=messages,
+                    inferenceConfig={
+                        "temperature": float(st.session_state[f"{st.session_state['widget_key']}_Temperature"]),
+                        "maxTokens": int(st.session_state[f"{st.session_state['widget_key']}_Max_Token"]),
+                    }
+                )
+
+                full_response = ""
+                for event in response['stream']:
+                    if 'contentBlockDelta' in event:
+                        delta_text = event['contentBlockDelta']['delta']['text']
+                        full_response += delta_text
+                        stream_handler.container.markdown(full_response)
+                
+                return full_response
+
         except Exception as e:
             if "ThrottlingException" in str(e):
                 error_message = "요청을 처리하지 못했습니다. 잠시 후 다시 말씀해 주세요. 🙏"
@@ -254,7 +318,7 @@ def generate_response(
             return error_message
 
 def new_chat() -> None:
-    st.session_state["messages"] = [INIT_MESSAGE]
+    st.session_state["messages"] = [get_init_message(st.session_state[f"{st.session_state['widget_key']}_Model"])]
     st.session_state["langchain_messages"] = []
     if "document_context" in st.session_state:
         del st.session_state["document_context"]
@@ -318,13 +382,13 @@ def main() -> None:
     if "widget_key" not in st.session_state:
         st.session_state["widget_key"] = str(random.randint(1, 1000000))
     if "messages" not in st.session_state:
-        st.session_state.messages = [INIT_MESSAGE]
+        st.session_state.messages = [get_init_message("Claude 3.5 Sonnet v2")]
     if "langchain_messages" not in st.session_state:
         st.session_state.langchain_messages = []
 
     st.sidebar.button("New Chat", on_click=new_chat, type="primary")
 
-    temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file = get_sidebar_params()
+    temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name = get_sidebar_params()
 
     document_context = None
     if uploaded_file:
@@ -335,7 +399,7 @@ def main() -> None:
         document_context = st.session_state["document_context"]
 
     conv_chain = init_conversationchain(
-        temperature, top_p, top_k, max_tokens, memory_window, system_prompt, document_context
+        temperature, top_p, top_k, max_tokens, memory_window, system_prompt, model_name, document_context
     )
 
     display_chat_messages()
