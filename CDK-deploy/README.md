@@ -58,7 +58,7 @@ Amazon Bedrock의 Claude 3.5 Sonnet v2와 Nova Pro 1.0 모델을 활용한 문�
 ### Bedrock 모델 접근 권한
 - [필수] 다음 모델 중 하나 이상에 대한 접근 권한 (us-west-2 리전)
   - Claude 3.5 Sonnet v2 (모델 ID: anthropic.claude-3-5-sonnet-20241022-v2:0)
-  - Nova Pro v1 (모델 ID: amazon.nova-pro-v1:0)
+  - Nova Pro 1.0 (모델 ID: amazon.nova-pro-v1:0)
 
 ### 필요한 IAM 권한
 - Amazon Bedrock 관련:
