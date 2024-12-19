@@ -1,6 +1,6 @@
 # AWS CDK로 Bedrock 챗봇 배포하기
 
-Amazon Bedrock의 Claude 3.5 Sonnet과 Nova Pro 1.0 모델을 활용한 문서 기반 Q&A 챗봇을 AWS 클라우드 환경에 자동으로 배포하는 CDK 템플릿입니다.
+Amazon Bedrock의 Claude 3.5 Sonnet v2와 Nova Pro 1.0 모델을 활용한 문서 기반 Q&A 챗봇을 AWS 클라우드 환경에 자동으로 배포하는 CDK 템플릿입니다.
 
 ## 아키텍처 개요
 
