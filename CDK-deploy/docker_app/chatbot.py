@@ -50,6 +50,8 @@ def initialize_session_state():
         st.session_state.context = None
     if "nova_messages" not in st.session_state:
         st.session_state.nova_messages = []
+    if "initial_system_message" not in st.session_state:
+        st.session_state.initial_system_message = None
 
 class StreamHandler(BaseCallbackHandler):
     def __init__(self, container: st.container) -> None:
@@ -198,18 +200,11 @@ def init_conversation_chain(
     max_tokens: int,
     system_prompt: str,
     model_name: str,
-    context: str = None
 ) -> Union[ChatBedrock, boto3.client]:
 
     model_info = MODELS[model_name]
     model_id = model_info["id"]
     use_model_kwargs = model_info["use_model_kwargs"]
-
-    # 문서 컨텍스트가 있는 경우 시스템 프롬프트에 추가
-    if context:
-        full_system_prompt = f"{system_prompt}\n\n참고할 문서 내용:\n\n{context}"
-    else:
-        full_system_prompt = system_prompt
 
     if use_model_kwargs:  # Claude 3.5 Sonnet
         model_kwargs = {
@@ -217,7 +212,7 @@ def init_conversation_chain(
             "top_p": top_p,
             "top_k": top_k,
             "max_tokens": max_tokens,
-            "system": full_system_prompt
+            "system": system_prompt
         }
         return ChatBedrock(
             model_id=model_id,
@@ -232,14 +227,15 @@ def convert_chat_messages_to_converse_api(chat_messages: List[ChatMessage]) -> L
     """ChatMessage 객체 리스트를 Nova Pro API 형식으로 변환"""
     messages = []
     for chat_msg in chat_messages:
-        messages.append({
-            "role": chat_msg.role,
-            "content": [
-                {
-                    "text": chat_msg.text
-                }
-            ]
-        })
+        if chat_msg.role != 'system':  # system 역할은 건너뛰기
+            messages.append({
+                "role": chat_msg.role,
+                "content": [
+                    {
+                        "text": chat_msg.text
+                    }
+                ]
+            })
     return messages
 
 def generate_response(
@@ -315,6 +311,7 @@ def new_chat() -> None:
     st.session_state.chat_history.clear()
     st.session_state.nova_messages = []
     st.session_state.context = None
+    st.session_state.initial_system_message = None
 
 def handle_file_upload(uploaded_file) -> str:
     """파일 업로드 처리"""
@@ -342,13 +339,28 @@ def main() -> None:
 
     temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name = get_sidebar_params()
 
+    # 문서가 업로드되면 시스템 메시지 초기화
     if uploaded_file:
         document_context = handle_file_upload(uploaded_file)
         if document_context:
             st.sidebar.success(f"문서가 성공적으로 업로드되었습니다: {uploaded_file.name}")
+            # 문서 컨텍스트를 포함한 시스템 메시지 생성
+            full_system_prompt = f"{system_prompt}\n\n참고할 문서 내용:\n\n{document_context}"
+            st.session_state.initial_system_message = full_system_prompt
+            
+            # Nova Pro의 경우 초기 시스템 메시지를 user 메시지로 추가
+            if model_name == "Nova Pro 1.0" and not st.session_state.nova_messages:
+                st.session_state.nova_messages = [
+                    ChatMessage('user', full_system_prompt),
+                    ChatMessage('assistant', "네, 이해했습니다. 업로드된 문서를 참고하여 답변하도록 하겠습니다.")
+                ]
+
+    # 시스템 프롬프트 설정
+    if st.session_state.initial_system_message and model_name == "Claude 3.5 Sonnet v2":
+        system_prompt = st.session_state.initial_system_message
 
     conv_chain = init_conversation_chain(
-        temperature, top_p, top_k, max_tokens, system_prompt, model_name, st.session_state.context
+        temperature, top_p, top_k, max_tokens, system_prompt, model_name
     )
 
     # 저장된 메시지 표시
