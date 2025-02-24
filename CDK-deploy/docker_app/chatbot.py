@@ -16,11 +16,11 @@ import boto3
 
 REGION = "us-west-2"
 MODELS = {
-    "Claude 3.5 Sonnet v2": {
-        "id": "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
+    "Claude 3.7 Sonnet": {
+        "id": "us.anthropic.claude-3-7-sonnet-20250219-v1:0",
         "class": ChatBedrock,
         "use_model_kwargs": True,
-        "max_tokens": 4096
+        "max_tokens": 8192
     },
     "Nova Pro 1.0": {
         "id": "us.amazon.nova-pro-v1:0",
@@ -207,7 +207,7 @@ def init_conversation_chain(
     model_id = model_info["id"]
     use_model_kwargs = model_info["use_model_kwargs"]
 
-    if use_model_kwargs:  # Claude 3.5 Sonnet
+    if use_model_kwargs:  # Claude 3.7 Sonnet
         model_kwargs = {
             "temperature": temperature,
             "top_p": top_p,
@@ -248,7 +248,7 @@ def generate_response(
         message_placeholder = st.empty()
         full_response = ""
         try:
-            if isinstance(conversation, ChatBedrock):  # Claude 3.5 Sonnet
+            if isinstance(conversation, ChatBedrock):  # Claude 3.7 Sonnet
                 messages = []
                 messages.append(SystemMessage(content=conversation.model_kwargs["system"]))
                 for msg in chat_history.messages:
@@ -359,7 +359,7 @@ def main() -> None:
                 ]
 
     # 시스템 프롬프트 설정
-    if st.session_state.initial_system_message and model_name == "Claude 3.5 Sonnet v2":
+    if st.session_state.initial_system_message and model_name == "Claude 3.7 Sonnet":
         system_prompt = st.session_state.initial_system_message
 
     conv_chain = init_conversation_chain(
