@@ -23,6 +23,11 @@ Amazon Bedrock의 Claude 3.7 Sonnet 과 Nova Pro 1.0 모델을 활용한 문서 
    - **모델 선택 기능**
      - Claude 3.7 Sonnet : 높은 정확도와 문맥 이해력
      - Nova Pro 1.0: 빠른 응답 속도와 효율적인 처리
+   - **Model reasoning 모드** (Claude 3.7 Sonnet 전용)
+     - 복잡한 문제 해결을 위한 고급 추론 기능
+     - 최대 64,000 길이 지원
+     - 최대 4,096 토큰의 추론 과정 활용
+     - Temperature 1.0 고정 및 Top-K/Top-P 비활성화
    - 스트리밍 방식의 실시간 응답
    - 한국어 응답 최적화
 
@@ -141,11 +146,15 @@ streamlit run app.py --server.port 8080
    - 업로드 성공 시 알림 메시지 확인
 
 3. **파라미터 설정**
+   - **Model reasoning 모드** (Claude 3.7 Sonnet 전용)
+     - 복잡한 문제 해결이 필요할 때 활성화
+     - 활성화 시 Temperature는 1.0으로 고정되며 Top-K/Top-P 설정이 비활성화됨
+     - 최대 64,000 길이와 최대 4,096 토큰의 추론 과정 지원
    - Temperature: 응답의 창의성 조절 (0.0 ~ 1.0)
    - Top-P: 토큰 샘플링 확률 조절
    - Top-K: 고려할 최상위 토큰 수 설정
    - Max Token: 최대 응답 길이 설정
-     - Claude 3.7 Sonnet: 최대 8,192 토큰
+     - Claude 3.7 Sonnet: 기본 최대 8,192 토큰
      - Nova Pro: 최대 5,000 토큰
    - Memory Window: 대화 기억 범위 설정
 

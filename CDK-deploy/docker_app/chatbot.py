@@ -5,6 +5,10 @@ import os
 import tempfile
 import csv
 import pandas as pd
+import warnings
+
+# Pydantic 경고 무시
+warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
 import streamlit as st
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
@@ -66,7 +70,7 @@ def set_page_config() -> None:
     st.set_page_config(page_title="Bedrock Chatbot", layout="wide")
     st.title("Bedrock Chatbot with Document Q&A")
 
-def get_sidebar_params() -> Tuple[float, float, int, int, int, str]:
+def get_sidebar_params() -> Tuple[float, float, int, int, int, str, object, str, bool]:
     with st.sidebar:
         st.markdown("## Model Selection")
         model_name = st.radio(
@@ -75,6 +79,19 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str]:
             index=0,
             key=f"{st.session_state['widget_key']}_Model"
         )
+        
+        # Claude 3.7 Sonnet 모델이 선택된 경우에만 Model reasoning 모드 옵션 표시
+        extended_thinking = False  # 기본값으로 비활성화
+        if model_name == "Claude 3.7 Sonnet":
+            extended_thinking = st.checkbox(
+                "Model reasoning 모드 활성화",
+                value=False,  # 기본값으로 비활성화
+                help="Claude 3.7 Sonnet의 추론 모드를 활성화합니다. 복잡한 문제 해결에 도움이 됩니다. (참고: 이 모드에서는 Temperature가 자동으로 1.0으로 설정되고 Top-K 및 Top-P 설정이 비활성화됩니다)",
+                key=f"{st.session_state['widget_key']}_Model_Reasoning"
+            )
+            
+            if extended_thinking:
+                st.info("Model reasoning 모드가 활성화되어 Temperature 값이 1.0으로 자동 설정되고 Top-K 및 Top-P 설정이 비활성화됩니다.")
         
         st.markdown("## Document Upload")
         uploaded_file = st.file_uploader(
@@ -143,7 +160,7 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str]:
                     key=f"{st.session_state['widget_key']}_Memory_Window",
                 )
 
-    return temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name
+    return temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name, extended_thinking
 
 def process_uploaded_file(file_path: str) -> str:
     """문서 파일을 처리하여 텍스트로 변환"""
@@ -201,6 +218,7 @@ def init_conversation_chain(
     max_tokens: int,
     system_prompt: str,
     model_name: str,
+    extended_thinking: bool = False,
 ) -> Union[ChatBedrock, boto3.client]:
 
     model_info = MODELS[model_name]
@@ -215,6 +233,30 @@ def init_conversation_chain(
             "max_tokens": max_tokens,
             "system": system_prompt
         }
+        
+        # Model reasoning 모드가 활성화된 경우 (Claude 3.7 Sonnet 전용)
+        if model_name == "Claude 3.7 Sonnet" and extended_thinking:
+            # Model reasoning 모드에서는 temperature가 반드시 1이어야 함
+            model_kwargs["temperature"] = 1.0
+            model_kwargs["anthropic_version"] = "bedrock-2023-05-31"
+            
+            # Model reasoning 모드에서는 top_k와 top_p를 설정하지 않아야 함
+            if "top_k" in model_kwargs:
+                del model_kwargs["top_k"]
+            if "top_p" in model_kwargs:
+                del model_kwargs["top_p"]
+            
+            # 최대 Length는 64000으로 설정
+            model_kwargs["max_tokens"] = 64000
+            
+            # thinking.budget_tokens는 max_tokens보다 작아야 하며, 최대 4096
+            thinking_budget = min(4096, model_kwargs["max_tokens"] - 1000)
+            
+            model_kwargs["thinking"] = {
+                "type": "enabled",
+                "budget_tokens": thinking_budget  # 사고 과정에 할당할 토큰 수
+            }
+            
         return ChatBedrock(
             model_id=model_id,
             model_kwargs=model_kwargs,
@@ -223,6 +265,21 @@ def init_conversation_chain(
         )
     else:  # Nova Pro
         return boto3.client("bedrock-runtime", region_name=REGION)
+
+def convert_langchain_messages_to_anthropic(messages):
+    """LangChain 메시지를 Anthropic API 형식으로 변환"""
+    result = []
+    system_message = None
+    
+    for msg in messages:
+        if msg.type == "system":
+            system_message = msg.content  # 시스템 메시지 별도 저장
+        elif msg.type == "ai":
+            result.append({"role": "assistant", "content": msg.content})
+        elif msg.type == "human":
+            result.append({"role": "user", "content": msg.content})
+    
+    return result, system_message
 
 def convert_chat_messages_to_converse_api(chat_messages: List[ChatMessage]) -> List[dict]:
     """ChatMessage 객체 리스트를 Nova Pro API 형식으로 변환"""
@@ -255,12 +312,87 @@ def generate_response(
                     messages.append(msg)
                 messages.append(HumanMessage(content=input_text))
                 
-                for chunk in conversation.stream(messages):
-                    if chunk.content:
-                        full_response += chunk.content
-                        message_placeholder.markdown(full_response + "▌")
-                message_placeholder.markdown(full_response)
-                return full_response
+                # Model reasoning 모드 활성화 여부 확인
+                has_thinking = "thinking" in conversation.model_kwargs
+                
+                try:
+                    # 스트리밍 처리 수정
+                    if has_thinking:
+                        # Model reasoning 모드에서는 직접 boto3 클라이언트 사용
+                        bedrock_runtime = boto3.client("bedrock-runtime", region_name=REGION)
+                        
+                        # 메시지 변환
+                        anthropic_messages, system_content = convert_langchain_messages_to_anthropic(messages)
+                        
+                        # 최대 토큰 값 설정 (64000)
+                        model_max_tokens = 64000
+                        
+                        request_payload = {
+                            "anthropic_version": "bedrock-2023-05-31",
+                            "max_tokens": model_max_tokens,
+                            "temperature": 1.0,
+                            "system": system_content,  # 시스템 메시지를 별도 파라미터로 전달
+                            "thinking": conversation.model_kwargs["thinking"],
+                            "messages": anthropic_messages
+                        }
+                        
+                        response = bedrock_runtime.invoke_model_with_response_stream(
+                            modelId=MODELS["Claude 3.7 Sonnet"]["id"],
+                            body=json.dumps(request_payload)
+                        )
+                        
+                        # 디버깅을 위한 요청 페이로드 출력
+                        print(f"요청 페이로드: {json.dumps(request_payload, indent=2)}")
+                        
+                        for event in response["body"]:
+                            try:
+                                chunk = json.loads(event["chunk"]["bytes"])
+                                print(f"청크 데이터: {chunk}")  # 디버깅용
+                                
+                                if chunk.get("type") == "thinking":
+                                    print("사고 과정:", chunk.get("thinking"))
+                                # text 또는 text_delta 모두 처리
+                                elif chunk.get("type") == "content_block_delta" and (
+                                    chunk["delta"].get("type") == "text" or chunk["delta"].get("type") == "text_delta"
+                                ):
+                                    text_chunk = chunk["delta"].get("text", "")
+                                    full_response += text_chunk
+                                    print(f"현재 응답: {full_response}")  # 응답 내용 확인
+                                    
+                                    # 매 청크마다 업데이트하지 말고 일정 간격으로 업데이트
+                                    if len(text_chunk) > 10 or text_chunk.endswith(('.', '!', '?', '\n')):
+                                        message_placeholder.markdown(full_response + "▌")
+                                        
+                                # 응답 완료 이벤트 처리
+                                elif chunk.get("type") == "message_stop":
+                                    print("응답 완료")
+                                    message_placeholder.markdown(full_response)
+                            except Exception as chunk_error:
+                                print(f"청크 처리 오류: {str(chunk_error)}")
+                        
+                        # 스트리밍 완료 후 최종 메시지 표시
+                        print(f"최종 응답: {full_response}")
+                        message_placeholder.markdown(full_response)
+                    else:
+                        # 일반 모드에서는 LangChain 스트리밍 사용
+                        for chunk in conversation.stream(messages):
+                            if hasattr(chunk, 'content') and chunk.content:
+                                full_response += chunk.content
+                                message_placeholder.markdown(full_response + "▌")
+                    
+                    message_placeholder.markdown(full_response)
+                    return full_response
+                except Exception as e:
+                    st.error(f"스트리밍 처리 중 오류: {str(e)}")
+                    # 스트리밍 실패 시 일반 호출 시도
+                    try:
+                        response = conversation.invoke(messages)
+                        full_response = response.content
+                        message_placeholder.markdown(full_response)
+                        return full_response
+                    except Exception as e2:
+                        st.error(f"일반 호출 처리 중 오류: {str(e2)}")
+                        return f"응답 생성 중 오류가 발생했습니다: {str(e2)}"
             else:  # Nova Pro
                 # 새로운 사용자 메시지 추가
                 new_message = ChatMessage('user', input_text)
@@ -299,10 +431,19 @@ def generate_response(
                 return full_response
 
         except Exception as e:
-            if "ThrottlingException" in str(e):
+            error_detail = str(e)
+            print(f"상세 오류: {error_detail}")  # 터미널에 자세한 오류 출력
+            
+            if "ThrottlingException" in error_detail:
                 error_message = "요청을 처리하지 못했습니다. 잠시 후 다시 말씀해 주세요. 🙏"
+            elif "'message'" in error_detail:
+                error_message = "응답 형식 오류가 발생했습니다. Model reasoning 모드 설정을 확인해주세요."
+            elif "validationException" in error_detail:
+                error_message = "API 검증 오류가 발생했습니다. 요청 형식을 확인해주세요."
+                print(f"API 검증 오류 상세: {error_detail}")
             else:
-                error_message = f"죄송합니다. 오류가 발생했습니다: {str(e)}"
+                error_message = f"죄송합니다. 오류가 발생했습니다: {error_detail}"
+            
             message_placeholder.markdown(error_message)
             return error_message
 
@@ -340,7 +481,7 @@ def main() -> None:
 
     st.sidebar.button("New Chat", on_click=new_chat, type="primary")
 
-    temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name = get_sidebar_params()
+    temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name, extended_thinking = get_sidebar_params()
 
     # 문서가 업로드되면 시스템 메시지 초기화
     if uploaded_file:
@@ -363,7 +504,7 @@ def main() -> None:
         system_prompt = st.session_state.initial_system_message
 
     conv_chain = init_conversation_chain(
-        temperature, top_p, top_k, max_tokens, system_prompt, model_name
+        temperature, top_p, top_k, max_tokens, system_prompt, model_name, extended_thinking
     )
 
     # 저장된 메시지 표시
