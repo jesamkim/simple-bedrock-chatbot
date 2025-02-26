@@ -70,7 +70,7 @@ def set_page_config() -> None:
     st.set_page_config(page_title="Bedrock Chatbot", layout="wide")
     st.title("Bedrock Chatbot with Document Q&A")
 
-def get_sidebar_params() -> Tuple[float, float, int, int, int, str, object, str, bool]:
+def get_sidebar_params() -> Tuple[float, float, int, int, int, str, object, str, bool, bool]:
     with st.sidebar:
         st.markdown("## Model Selection")
         model_name = st.radio(
@@ -82,6 +82,7 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str, object, str,
         
         # Claude 3.7 Sonnet 모델이 선택된 경우에만 Model reasoning 모드 옵션 표시
         extended_thinking = False  # 기본값으로 비활성화
+        show_reasoning = False  # 기본값으로 비활성화
         if model_name == "Claude 3.7 Sonnet":
             extended_thinking = st.checkbox(
                 "Model reasoning 모드 활성화",
@@ -92,6 +93,13 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str, object, str,
             
             if extended_thinking:
                 st.info("Model reasoning 모드가 활성화되어 Temperature 값이 1.0으로 자동 설정되고 Top-K 및 Top-P 설정이 비활성화됩니다.")
+                
+                show_reasoning = st.checkbox(
+                    "Reasoning 과정 표시",
+                    value=True,
+                    help="Claude의 사고 과정을 실시간으로 표시합니다.",
+                    key=f"{st.session_state['widget_key']}_Show_Reasoning"
+                )
         
         st.markdown("## Document Upload")
         uploaded_file = st.file_uploader(
@@ -160,7 +168,7 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str, object, str,
                     key=f"{st.session_state['widget_key']}_Memory_Window",
                 )
 
-    return temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name, extended_thinking
+    return temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name, extended_thinking, show_reasoning
 
 def process_uploaded_file(file_path: str) -> str:
     """문서 파일을 처리하여 텍스트로 변환"""
@@ -299,7 +307,8 @@ def convert_chat_messages_to_converse_api(chat_messages: List[ChatMessage]) -> L
 def generate_response(
     conversation: Union[ChatBedrock, boto3.client],
     input_text: str,
-    chat_history: StreamlitChatMessageHistory
+    chat_history: StreamlitChatMessageHistory,
+    show_reasoning: bool = False
 ) -> str:
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
@@ -344,13 +353,38 @@ def generate_response(
                         # 디버깅을 위한 요청 페이로드 출력
                         print(f"요청 페이로드: {json.dumps(request_payload, indent=2)}")
                         
+                        # 채팅 메시지 위에 reasoning을 표시하기 위해 reasoning_placeholder를 먼저 생성
+                        reasoning_placeholder = st.empty()
+                        
+                        reasoning_text = ""
+                        has_shown_reasoning = False
+                        
+                        # 디버깅을 위한 로그 추가
+                        print(f"show_reasoning 값: {show_reasoning}")
+                        
                         for event in response["body"]:
                             try:
                                 chunk = json.loads(event["chunk"]["bytes"])
                                 print(f"청크 데이터: {chunk}")  # 디버깅용
                                 
+                                # thinking 타입 처리 (reasoning 과정)
                                 if chunk.get("type") == "thinking":
-                                    print("사고 과정:", chunk.get("thinking"))
+                                    thinking_content = chunk.get("thinking", "")
+                                    reasoning_text += thinking_content
+                                    print(f"사고 과정 감지: {thinking_content}")
+                                    has_shown_reasoning = True
+                                    
+                                    # reasoning 과정을 UI에 표시 (show_reasoning이 True인 경우에만)
+                                    if show_reasoning:
+                                        # 메시지 플레이스홀더 위에 reasoning 표시
+                                        reasoning_placeholder.markdown(f"""
+                                        <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; max-height: 400px; overflow-y: auto;">
+                                            <h4>🧠 Reasoning...</h4>
+                                            <pre style="white-space: pre-wrap; overflow-wrap: break-word;">{reasoning_text}</pre>
+                                        </div>
+                                        """, unsafe_allow_html=True)
+                                        print("Reasoning UI 업데이트됨")
+                                
                                 # text 또는 text_delta 모두 처리
                                 elif chunk.get("type") == "content_block_delta" and (
                                     chunk["delta"].get("type") == "text" or chunk["delta"].get("type") == "text_delta"
@@ -362,6 +396,70 @@ def generate_response(
                                     # 매 청크마다 업데이트하지 말고 일정 간격으로 업데이트
                                     if len(text_chunk) > 10 or text_chunk.endswith(('.', '!', '?', '\n')):
                                         message_placeholder.markdown(full_response + "▌")
+                                
+                                # 다른 형식의 thinking 데이터 처리 시도
+                                elif "thinking" in chunk:
+                                    thinking_content = chunk.get("thinking", "")
+                                    reasoning_text += thinking_content
+                                    print(f"다른 형식의 사고 과정 감지: {thinking_content}")
+                                    has_shown_reasoning = True
+                                    
+                                    # reasoning 과정을 UI에 표시 (show_reasoning이 True인 경우에만)
+                                    if show_reasoning:
+                                        reasoning_placeholder.markdown(f"""
+                                        <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; max-height: 400px; overflow-y: auto;">
+                                            <h4>🧠 Reasoning...</h4>
+                                            <pre style="white-space: pre-wrap; overflow-wrap: break-word;">{reasoning_text}</pre>
+                                        </div>
+                                        """, unsafe_allow_html=True)
+                                        print("Reasoning UI 업데이트됨 (다른 형식)")
+                                
+                                # content_block_start 타입 처리 (reasoning 과정이 여기에 포함될 수 있음)
+                                elif chunk.get("type") == "content_block_start" and "thinking" in str(chunk):
+                                    try:
+                                        # 다양한 형식의 thinking 데이터 추출 시도
+                                        if "thinking" in chunk:
+                                            thinking_content = chunk.get("thinking", "")
+                                        elif "content" in chunk and "thinking" in str(chunk["content"]):
+                                            thinking_content = str(chunk["content"])
+                                        else:
+                                            thinking_content = str(chunk)
+                                            
+                                        reasoning_text += thinking_content
+                                        print(f"content_block_start에서 사고 과정 감지: {thinking_content}")
+                                        has_shown_reasoning = True
+                                        
+                                        # reasoning 과정을 UI에 표시 (show_reasoning이 True인 경우에만)
+                                        if show_reasoning:
+                                            reasoning_placeholder.markdown(f"""
+                                            <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; max-height: 400px; overflow-y: auto;">
+                                                <h4>🧠 Reasoning...</h4>
+                                                <pre style="white-space: pre-wrap; overflow-wrap: break-word;">{reasoning_text}</pre>
+                                            </div>
+                                            """, unsafe_allow_html=True)
+                                            print("Reasoning UI 업데이트됨 (content_block_start)")
+                                    except Exception as thinking_error:
+                                        print(f"사고 과정 추출 오류: {str(thinking_error)}")
+                                
+                                # 모든 청크에서 "thinking" 문자열을 찾아 처리 (마지막 시도)
+                                elif show_reasoning and "thinking" in str(chunk).lower():
+                                    try:
+                                        # 청크를 문자열로 변환하여 처리
+                                        chunk_str = str(chunk)
+                                        reasoning_text += f"\n[추출된 사고 과정]: {chunk_str}\n"
+                                        print(f"문자열 검색으로 사고 과정 감지: {chunk_str}")
+                                        has_shown_reasoning = True
+                                        
+                                        # reasoning 과정을 UI에 표시
+                                        reasoning_placeholder.markdown(f"""
+                                        <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; max-height: 400px; overflow-y: auto;">
+                                            <h4>🧠 Reasoning...</h4>
+                                            <pre style="white-space: pre-wrap; overflow-wrap: break-word;">{reasoning_text}</pre>
+                                        </div>
+                                        """, unsafe_allow_html=True)
+                                        print("Reasoning UI 업데이트됨 (문자열 검색)")
+                                    except Exception as thinking_error:
+                                        print(f"문자열 검색 사고 과정 추출 오류: {str(thinking_error)}")
                                         
                                 # 응답 완료 이벤트 처리
                                 elif chunk.get("type") == "message_stop":
@@ -373,6 +471,11 @@ def generate_response(
                         # 스트리밍 완료 후 최종 메시지 표시
                         print(f"최종 응답: {full_response}")
                         message_placeholder.markdown(full_response)
+                        
+                        # 디버깅 정보 출력
+                        print(f"reasoning 표시 여부: {has_shown_reasoning}, show_reasoning 값: {show_reasoning}")
+                        if not has_shown_reasoning and show_reasoning:
+                            print("경고: reasoning 데이터가 감지되지 않았습니다.")
                     else:
                         # 일반 모드에서는 LangChain 스트리밍 사용
                         for chunk in conversation.stream(messages):
@@ -481,7 +584,7 @@ def main() -> None:
 
     st.sidebar.button("New Chat", on_click=new_chat, type="primary")
 
-    temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name, extended_thinking = get_sidebar_params()
+    temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name, extended_thinking, show_reasoning = get_sidebar_params()
 
     # 문서가 업로드되면 시스템 메시지 초기화
     if uploaded_file:
@@ -521,7 +624,7 @@ def main() -> None:
             st.markdown(prompt)
 
         # 응답 생성
-        response = generate_response(conv_chain, prompt, st.session_state.chat_history)
+        response = generate_response(conv_chain, prompt, st.session_state.chat_history, show_reasoning)
         
         st.session_state.messages.append({"role": "assistant", "content": response})
         st.session_state.chat_history.add_ai_message(response)
