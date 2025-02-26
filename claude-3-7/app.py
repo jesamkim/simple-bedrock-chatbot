@@ -377,25 +377,65 @@ def generate_response(
                                     # reasoning 과정을 UI에 표시 (show_reasoning이 True인 경우에만)
                                     if show_reasoning:
                                         # 메시지 플레이스홀더 위에 reasoning 표시
+                                        # 라이트/다크 테마에 따라 다른 색상 사용
+                                        is_dark_theme = True  # 기본값으로 다크 테마 가정
+                                        try:
+                                            # Streamlit 테마 감지 시도
+                                            theme = st.get_option("theme.base")
+                                            is_dark_theme = theme == "dark"
+                                        except:
+                                            pass  # 오류 발생 시 기본값 사용
+                                        
+                                        bg_color = "#2a2a2a" if is_dark_theme else "#f0f2f6"
+                                        text_color = "#ffffff" if is_dark_theme else "#262730"
+                                        
                                         reasoning_placeholder.markdown(f"""
-                                        <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; max-height: 400px; overflow-y: auto;">
-                                            <h4>🧠 Reasoning...</h4>
-                                            <pre style="white-space: pre-wrap; overflow-wrap: break-word;">{reasoning_text}</pre>
+                                        <div style="background-color: {bg_color}; color: {text_color}; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; border: 1px solid #007bff; max-height: 400px; overflow-y: auto;">
+                                            <h4 style="color: {text_color}; margin-top: 0;">🧠 Reasoning...</h4>
+                                            <pre style="white-space: pre-wrap; overflow-wrap: break-word; color: {text_color}; background-color: transparent; border: none; padding: 0; margin: 0;">{reasoning_text}</pre>
                                         </div>
                                         """, unsafe_allow_html=True)
                                         print("Reasoning UI 업데이트됨")
                                 
-                                # text 또는 text_delta 모두 처리
-                                elif chunk.get("type") == "content_block_delta" and (
-                                    chunk["delta"].get("type") == "text" or chunk["delta"].get("type") == "text_delta"
-                                ):
-                                    text_chunk = chunk["delta"].get("text", "")
-                                    full_response += text_chunk
-                                    print(f"현재 응답: {full_response}")  # 응답 내용 확인
+                                # content_block_delta 타입 처리 - text 또는 thinking_delta 모두 처리
+                                elif chunk.get("type") == "content_block_delta":
+                                    # text 또는 text_delta 처리
+                                    if chunk["delta"].get("type") == "text" or chunk["delta"].get("type") == "text_delta":
+                                        text_chunk = chunk["delta"].get("text", "")
+                                        full_response += text_chunk
+                                        print(f"현재 응답: {full_response}")  # 응답 내용 확인
+                                        
+                                        # 매 청크마다 업데이트하지 말고 일정 간격으로 업데이트
+                                        if len(text_chunk) > 10 or text_chunk.endswith(('.', '!', '?', '\n')):
+                                            message_placeholder.markdown(full_response + "▌")
                                     
-                                    # 매 청크마다 업데이트하지 말고 일정 간격으로 업데이트
-                                    if len(text_chunk) > 10 or text_chunk.endswith(('.', '!', '?', '\n')):
-                                        message_placeholder.markdown(full_response + "▌")
+                                    # thinking_delta 처리 (사고 과정)
+                                    elif show_reasoning and chunk["delta"].get("type") == "thinking_delta":
+                                        thinking_chunk = chunk["delta"].get("thinking", "")
+                                        if thinking_chunk:
+                                            reasoning_text += thinking_chunk
+                                            print(f"thinking_delta 사고 과정: {thinking_chunk}")
+                                            has_shown_reasoning = True
+                                            
+                                            # reasoning 과정을 UI에 표시
+                                            # 라이트/다크 테마에 따라 다른 색상 사용
+                                            is_dark_theme = True  # 기본값으로 다크 테마 가정
+                                            try:
+                                                # Streamlit 테마 감지 시도
+                                                theme = st.get_option("theme.base")
+                                                is_dark_theme = theme == "dark"
+                                            except:
+                                                pass  # 오류 발생 시 기본값 사용
+                                            
+                                            bg_color = "#2a2a2a" if is_dark_theme else "#f0f2f6"
+                                            text_color = "#ffffff" if is_dark_theme else "#262730"
+                                            
+                                            reasoning_placeholder.markdown(f"""
+                                            <div style="background-color: {bg_color}; color: {text_color}; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; border: 1px solid #007bff; max-height: 400px; overflow-y: auto;">
+                                                <h4 style="color: {text_color}; margin-top: 0;">🧠 Reasoning...</h4>
+                                                <pre style="white-space: pre-wrap; overflow-wrap: break-word; color: {text_color}; background-color: transparent; border: none; padding: 0; margin: 0;">{reasoning_text}</pre>
+                                            </div>
+                                            """, unsafe_allow_html=True)
                                 
                                 # 다른 형식의 thinking 데이터 처리 시도
                                 elif "thinking" in chunk:
@@ -406,10 +446,22 @@ def generate_response(
                                     
                                     # reasoning 과정을 UI에 표시 (show_reasoning이 True인 경우에만)
                                     if show_reasoning:
+                                        # 라이트/다크 테마에 따라 다른 색상 사용
+                                        is_dark_theme = True  # 기본값으로 다크 테마 가정
+                                        try:
+                                            # Streamlit 테마 감지 시도
+                                            theme = st.get_option("theme.base")
+                                            is_dark_theme = theme == "dark"
+                                        except:
+                                            pass  # 오류 발생 시 기본값 사용
+                                        
+                                        bg_color = "#2a2a2a" if is_dark_theme else "#f0f2f6"
+                                        text_color = "#ffffff" if is_dark_theme else "#262730"
+                                        
                                         reasoning_placeholder.markdown(f"""
-                                        <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; max-height: 400px; overflow-y: auto;">
-                                            <h4>🧠 Reasoning...</h4>
-                                            <pre style="white-space: pre-wrap; overflow-wrap: break-word;">{reasoning_text}</pre>
+                                        <div style="background-color: {bg_color}; color: {text_color}; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; border: 1px solid #007bff; max-height: 400px; overflow-y: auto;">
+                                            <h4 style="color: {text_color}; margin-top: 0;">🧠 Reasoning...</h4>
+                                            <pre style="white-space: pre-wrap; overflow-wrap: break-word; color: {text_color}; background-color: transparent; border: none; padding: 0; margin: 0;">{reasoning_text}</pre>
                                         </div>
                                         """, unsafe_allow_html=True)
                                         print("Reasoning UI 업데이트됨 (다른 형식)")
@@ -418,48 +470,89 @@ def generate_response(
                                 elif chunk.get("type") == "content_block_start" and "thinking" in str(chunk):
                                     try:
                                         # 다양한 형식의 thinking 데이터 추출 시도
-                                        if "thinking" in chunk:
-                                            thinking_content = chunk.get("thinking", "")
-                                        elif "content" in chunk and "thinking" in str(chunk["content"]):
-                                            thinking_content = str(chunk["content"])
-                                        else:
-                                            thinking_content = str(chunk)
-                                            
-                                        reasoning_text += thinking_content
-                                        print(f"content_block_start에서 사고 과정 감지: {thinking_content}")
-                                        has_shown_reasoning = True
+                                        thinking_content = ""
                                         
-                                        # reasoning 과정을 UI에 표시 (show_reasoning이 True인 경우에만)
-                                        if show_reasoning:
-                                            reasoning_placeholder.markdown(f"""
-                                            <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; max-height: 400px; overflow-y: auto;">
-                                                <h4>🧠 Reasoning...</h4>
-                                                <pre style="white-space: pre-wrap; overflow-wrap: break-word;">{reasoning_text}</pre>
-                                            </div>
-                                            """, unsafe_allow_html=True)
-                                            print("Reasoning UI 업데이트됨 (content_block_start)")
+                                        # content_block 내에 thinking 필드가 있는 경우
+                                        if "content_block" in chunk and "thinking" in chunk["content_block"]:
+                                            thinking_content = chunk["content_block"].get("thinking", "")
+                                        # 직접 thinking 필드가 있는 경우
+                                        elif "thinking" in chunk:
+                                            thinking_content = chunk.get("thinking", "")
+                                        
+                                        # 추출된 내용이 있는 경우에만 추가
+                                        if thinking_content and not isinstance(thinking_content, dict):
+                                            reasoning_text += thinking_content
+                                            print(f"content_block_start에서 사고 과정 감지: {thinking_content}")
+                                            has_shown_reasoning = True
+                                            
+                                            # reasoning 과정을 UI에 표시 (show_reasoning이 True인 경우에만)
+                                            if show_reasoning:
+                                                # 라이트/다크 테마에 따라 다른 색상 사용
+                                                is_dark_theme = True  # 기본값으로 다크 테마 가정
+                                                try:
+                                                    # Streamlit 테마 감지 시도
+                                                    theme = st.get_option("theme.base")
+                                                    is_dark_theme = theme == "dark"
+                                                except:
+                                                    pass  # 오류 발생 시 기본값 사용
+                                                
+                                                bg_color = "#2a2a2a" if is_dark_theme else "#f0f2f6"
+                                                text_color = "#ffffff" if is_dark_theme else "#262730"
+                                                
+                                                reasoning_placeholder.markdown(f"""
+                                                <div style="background-color: {bg_color}; color: {text_color}; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; border: 1px solid #007bff; max-height: 400px; overflow-y: auto;">
+                                                    <h4 style="color: {text_color}; margin-top: 0;">🧠 Reasoning...</h4>
+                                                    <pre style="white-space: pre-wrap; overflow-wrap: break-word; color: {text_color}; background-color: transparent; border: none; padding: 0; margin: 0;">{reasoning_text}</pre>
+                                                </div>
+                                                """, unsafe_allow_html=True)
+                                                print("Reasoning UI 업데이트됨 (content_block_start)")
                                     except Exception as thinking_error:
                                         print(f"사고 과정 추출 오류: {str(thinking_error)}")
                                 
                                 # 모든 청크에서 "thinking" 문자열을 찾아 처리 (마지막 시도)
                                 elif show_reasoning and "thinking" in str(chunk).lower():
                                     try:
-                                        # 청크를 문자열로 변환하여 처리
-                                        chunk_str = str(chunk)
-                                        reasoning_text += f"\n[추출된 사고 과정]: {chunk_str}\n"
-                                        print(f"문자열 검색으로 사고 과정 감지: {chunk_str}")
-                                        has_shown_reasoning = True
+                                        # JSON 데이터에서 실제 사고 과정 내용만 추출
+                                        chunk_data = chunk
+                                        thinking_content = ""
                                         
-                                        # reasoning 과정을 UI에 표시
-                                        reasoning_placeholder.markdown(f"""
-                                        <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; max-height: 400px; overflow-y: auto;">
-                                            <h4>🧠 Reasoning...</h4>
-                                            <pre style="white-space: pre-wrap; overflow-wrap: break-word;">{reasoning_text}</pre>
-                                        </div>
-                                        """, unsafe_allow_html=True)
-                                        print("Reasoning UI 업데이트됨 (문자열 검색)")
+                                        # content_block_delta 타입인 경우
+                                        if isinstance(chunk_data, dict) and chunk_data.get("type") == "content_block_delta":
+                                            if "delta" in chunk_data and "thinking" in chunk_data["delta"]:
+                                                thinking_content = chunk_data["delta"].get("thinking", "")
+                                        
+                                        # 다른 형식의 thinking 데이터 처리
+                                        elif isinstance(chunk_data, dict) and "thinking" in chunk_data:
+                                            thinking_content = chunk_data.get("thinking", "")
+                                        
+                                        # 추출된 내용이 있는 경우에만 추가
+                                        if thinking_content:
+                                            reasoning_text += thinking_content
+                                            print(f"사고 과정 내용 추출: {thinking_content}")
+                                            has_shown_reasoning = True
+                                            
+                                            # reasoning 과정을 UI에 표시
+                                            # 라이트/다크 테마에 따라 다른 색상 사용
+                                            is_dark_theme = True  # 기본값으로 다크 테마 가정
+                                            try:
+                                                # Streamlit 테마 감지 시도
+                                                theme = st.get_option("theme.base")
+                                                is_dark_theme = theme == "dark"
+                                            except:
+                                                pass  # 오류 발생 시 기본값 사용
+                                            
+                                            bg_color = "#2a2a2a" if is_dark_theme else "#f0f2f6"
+                                            text_color = "#ffffff" if is_dark_theme else "#262730"
+                                            
+                                            reasoning_placeholder.markdown(f"""
+                                            <div style="background-color: {bg_color}; color: {text_color}; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; border: 1px solid #007bff; max-height: 400px; overflow-y: auto;">
+                                                <h4 style="color: {text_color}; margin-top: 0;">🧠 Reasoning...</h4>
+                                                <pre style="white-space: pre-wrap; overflow-wrap: break-word; color: {text_color}; background-color: transparent; border: none; padding: 0; margin: 0;">{reasoning_text}</pre>
+                                            </div>
+                                            """, unsafe_allow_html=True)
+                                            print("Reasoning UI 업데이트됨 (내용 추출)")
                                     except Exception as thinking_error:
-                                        print(f"문자열 검색 사고 과정 추출 오류: {str(thinking_error)}")
+                                        print(f"사고 과정 내용 추출 오류: {str(thinking_error)}")
                                         
                                 # 응답 완료 이벤트 처리
                                 elif chunk.get("type") == "message_stop":
