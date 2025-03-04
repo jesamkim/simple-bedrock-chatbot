@@ -5,3 +5,6 @@ langchain
 langchain-aws
 langchain-community
 langchain-core
+requests
+beautifulsoup4
+nltk

@@ -18,6 +18,9 @@ from langchain.callbacks.base import BaseCallbackHandler
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import boto3
 
+# 검색 기능 임포트
+from search import extract_keywords, duckduckgo_search, format_search_results
+
 REGION = "us-west-2"
 MODELS = {
     "Claude 3.7 Sonnet": {
@@ -70,7 +73,7 @@ def set_page_config() -> None:
     st.set_page_config(page_title="Bedrock Chatbot", layout="wide")
     st.title("Bedrock Chatbot with Document Q&A")
 
-def get_sidebar_params() -> Tuple[float, float, int, int, int, str, object, str, bool, bool]:
+def get_sidebar_params() -> Tuple[float, float, int, int, int, str, object, str, bool, bool, bool]:
     with st.sidebar:
         st.markdown("## Model Selection")
         model_name = st.radio(
@@ -100,6 +103,14 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str, object, str,
                     help="Claude의 사고 과정을 실시간으로 표시합니다.",
                     key=f"{st.session_state['widget_key']}_Show_Reasoning"
                 )
+        
+        # 인터넷 검색 기능 토글
+        internet_search = st.checkbox(
+            "Internet Search",
+            value=False,
+            help="활성화하면 프롬프트에서 키워드를 추출하여 인터넷 검색을 수행하고 그 결과를 바탕으로 답변합니다.",
+            key=f"{st.session_state['widget_key']}_Internet_Search"
+        )
         
         st.markdown("## Document Upload")
         uploaded_file = st.file_uploader(
@@ -168,7 +179,7 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str, object, str,
                     key=f"{st.session_state['widget_key']}_Memory_Window",
                 )
 
-    return temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name, extended_thinking, show_reasoning
+    return temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name, extended_thinking, show_reasoning, internet_search
 
 def process_uploaded_file(file_path: str) -> str:
     """문서 파일을 처리하여 텍스트로 변환"""
@@ -308,18 +319,55 @@ def generate_response(
     conversation: Union[ChatBedrock, boto3.client],
     input_text: str,
     chat_history: StreamlitChatMessageHistory,
-    show_reasoning: bool = False
+    show_reasoning: bool = False,
+    internet_search: bool = False
 ) -> str:
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
+        
+        # 인터넷 검색 수행 (활성화된 경우)
+        search_results_text = ""
+        if internet_search:
+            st.info("인터넷에서 관련 정보를 검색 중입니다...")
+            # 키워드 추출
+            keywords = extract_keywords(input_text)
+            search_query = " ".join(keywords)
+            
+            if search_query:
+                # DuckDuckGo 검색 수행
+                search_results = duckduckgo_search(search_query)
+                
+                # 검색 결과 포맷팅
+                search_results_text = format_search_results(search_results)
+                
+                if search_results:
+                    st.success(f"'{search_query}' 관련 검색 완료")
+                    
+                    # 검색 결과를 보여주기 (접을 수 있게)
+                    with st.expander("검색 결과 확인"):
+                        st.markdown(search_results_text)
+                else:
+                    st.warning(f"'{search_query}' 관련 검색 결과가 없습니다.")
+        
         try:
             if isinstance(conversation, ChatBedrock):  # Claude 3.7 Sonnet
                 messages = []
                 messages.append(SystemMessage(content=conversation.model_kwargs["system"]))
                 for msg in chat_history.messages:
                     messages.append(msg)
-                messages.append(HumanMessage(content=input_text))
+                
+                # 인터넷 검색 결과가 있다면 프롬프트에 포함
+                if internet_search and search_results_text:
+                    enhanced_input = f"""질문: {input_text}
+                    
+다음은 질문과 관련된 인터넷 검색 결과입니다:
+{search_results_text}
+
+위 정보를 참고하여 질문에 답변해주세요. 답변에서 인용한 정보가 있다면 반드시 그 출처(번호)를 [1], [2]와 같은 형식으로 명시해주세요."""
+                    messages.append(HumanMessage(content=enhanced_input))
+                else:
+                    messages.append(HumanMessage(content=input_text))
                 
                 # Model reasoning 모드 활성화 여부 확인
                 has_thinking = "thinking" in conversation.model_kwargs
@@ -677,7 +725,7 @@ def main() -> None:
 
     st.sidebar.button("New Chat", on_click=new_chat, type="primary")
 
-    temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name, extended_thinking, show_reasoning = get_sidebar_params()
+    temperature, top_p, top_k, max_tokens, memory_window, system_prompt, uploaded_file, model_name, extended_thinking, show_reasoning, internet_search = get_sidebar_params()
 
     # 문서가 업로드되면 시스템 메시지 초기화
     if uploaded_file:
@@ -717,7 +765,7 @@ def main() -> None:
             st.markdown(prompt)
 
         # 응답 생성
-        response = generate_response(conv_chain, prompt, st.session_state.chat_history, show_reasoning)
+        response = generate_response(conv_chain, prompt, st.session_state.chat_history, show_reasoning, internet_search)
         
         st.session_state.messages.append({"role": "assistant", "content": response})
         st.session_state.chat_history.add_ai_message(response)
