@@ -8,3 +8,4 @@ langchain-core
 requests
 beautifulsoup4
 nltk
+PyPDF2
