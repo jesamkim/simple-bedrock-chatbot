@@ -79,7 +79,8 @@ class DuckDuckGoServer:
             response = requests.get(
                 self.base_url,
                 params={'q': query},
-                headers=self.headers
+                headers=self.headers,
+                timeout=10  # 타임아웃 추가
             )
             response.raise_for_status()
             
@@ -121,11 +122,29 @@ class DuckDuckGoServer:
                     if len(results) >= self.max_results:
                         break
             
+            # 결과가 없을 경우 로그 출력
+            if not results:
+                print(f"'{query}' 검색 결과가 없습니다. HTML 응답 길이: {len(response.text)} 바이트")
+            
             return results
         
+        except requests.exceptions.RequestException as e:
+            error_msg = f"네트워크 요청 오류: {str(e)}"
+            print(error_msg)
+            # 빈 리스트 대신 오류 정보를 포함한 결과 반환
+            return [{
+                "title": "검색 오류",
+                "content": f"DuckDuckGo 검색 중 네트워크 오류가 발생했습니다: {str(e)}",
+                "url": ""
+            }]
         except Exception as e:
-            print(f"검색 중 오류 발생: {str(e)}")
-            return []
+            error_msg = f"검색 중 오류 발생: {str(e)}"
+            print(error_msg)
+            return [{
+                "title": "검색 처리 오류",
+                "content": f"검색 결과 처리 중 오류가 발생했습니다: {str(e)}",
+                "url": ""
+            }]
     
     def format_results(self, results: List[Dict[str, str]]) -> str:
         """

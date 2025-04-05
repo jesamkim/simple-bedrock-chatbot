@@ -25,7 +25,7 @@ Amazon Bedrock의 Claude 3.7 Sonnet 모델을 활용한 문서 기반 Q&A 챗봇
    - **Model reasoning 모드** (Claude 3.7 Sonnet 전용)
      - 복잡한 문제 해결을 위한 고급 추론 기능
      - 최대 64,000 길이 지원
-     - 최대 4,096 토큰의 추론 과정 활용
+     - 최대 8,196 토큰의 추론 과정 활용
      - Temperature 1.0 고정 및 Top-K/Top-P 비활성화
    - 스트리밍 방식의 실시간 응답
    - 한국어 응답 최적화

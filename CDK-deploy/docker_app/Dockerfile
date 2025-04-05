@@ -3,6 +3,10 @@ EXPOSE 8501
 WORKDIR /app
 COPY requirements.txt ./requirements.txt
 RUN  pip3 install --upgrade pip && pip3 install -r requirements.txt
+
+# NLTK 데이터 사전 다운로드
+RUN python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
+
 COPY . .
 
 # Command overriden by docker-compose
