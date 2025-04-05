@@ -1,6 +1,6 @@
 # AWS CDK로 Bedrock 챗봇 배포하기
 
-Amazon Bedrock의 Claude 3.7 Sonnet 과 Nova Pro 1.0 모델을 활용한 문서 기반 Q&A 챗봇을 AWS 클라우드 환경에 자동으로 배포하는 CDK 템플릿입니다.
+Amazon Bedrock의 Claude 3.7 Sonnet 모델을 활용한 문서 기반 Q&A 챗봇을 AWS 클라우드 환경에 자동으로 배포하는 CDK 템플릿입니다.
 
 ## 아키텍처 개요
 
@@ -20,9 +20,8 @@ Amazon Bedrock의 Claude 3.7 Sonnet 과 Nova Pro 1.0 모델을 활용한 문서 
    - 문서 기반 Q&A 수행
 
 2. **Amazon Bedrock 통합**
-   - **모델 선택 기능**
+   - **모델**
      - Claude 3.7 Sonnet : 높은 정확도와 문맥 이해력
-     - Nova Pro 1.0: 빠른 응답 속도와 효율적인 처리
    - **Model reasoning 모드** (Claude 3.7 Sonnet 전용)
      - 복잡한 문제 해결을 위한 고급 추론 기능
      - 최대 64,000 길이 지원
@@ -35,7 +34,6 @@ Amazon Bedrock의 Claude 3.7 Sonnet 과 Nova Pro 1.0 모델을 활용한 문서 
    - 직관적인 문서 업로드
    - 실시간 채팅 인터페이스
    - 모델 파라미터 조정 기능
-   - 모델 선택 옵션
 
 ### 아키텍처 특징
 1. **고가용성**
@@ -52,6 +50,54 @@ Amazon Bedrock의 Claude 3.7 Sonnet 과 Nova Pro 1.0 모델을 활용한 문서 
    - Fargate를 통한 자동 스케일링
    - CloudFront를 통한 글로벌 캐싱
 
+## Model Context Protocol(MCP) 기능
+
+이 프로젝트는 Claude와 같은 AI 모델이 외부 서비스와 상호작용할 수 있도록 Model Context Protocol(MCP)를 구현하고 있습니다.
+
+### MCP 개요
+- **Model Context Protocol**: AI 모델이 실시간 데이터 액세스, 외부 API 호출 등 다양한 기능을 활용할 수 있게 해주는 프로토콜
+- **목적**: AI 모델의 기능 확장, 실시간 정보 접근성 향상, 외부 시스템과의 통합
+
+### 구현된 MCP 서버
+현재 다음 MCP 서버들이 구현되어 있습니다:
+
+1. **Datetime MCP 서버**
+   - **기능**: 현재 날짜/시간 정보 제공
+   - **주요 도구**:
+     - `get_current_time`: 현재 시간 정보 반환
+     - `get_current_date`: 현재 날짜 정보 반환
+     - `get_datetime_info`: 종합적인 날짜/시간 정보 제공
+   - **특징**: 한국어 날짜/시간 표기, 시간대 설정, 시간 차이 계산
+
+2. **DuckDuckGo MCP 서버**
+   - **기능**: 실시간 웹 검색 결과 제공
+   - **주요 기능**:
+     - 검색 쿼리 처리 및 결과 반환
+     - 텍스트에서 중요 키워드 추출
+     - 검색 결과 포맷팅
+   - **특징**: 검색 결과 개수 설정, JSON 형식 출력 지원
+
+### MCP 활용 방법
+
+#### 챗봇에서의 활용
+- **실시간 정보**: 챗봇이 현재 날짜/시간 정보를 실시간으로 제공
+- **웹 검색**: 사용자 질문에 대한 최신 정보를 웹에서 검색하여 답변에 활용
+- **자연스러운 대화**: 시간 기반 인사말, 최신 정보를 반영한 응답 생성
+
+#### MCP 서버 확장 방법
+이 프로젝트의 MCP 구현은 다음과 같이 확장할 수 있습니다:
+
+```python
+# MCP 서버 생성 예시
+class CustomMCPServer:
+    def __init__(self):
+        self.server = Server(
+            {"name": "custom-server", "version": "1.0.0"},
+            {"capabilities": {"tools": {}}}
+        )
+        # 도구 핸들러 설정 및 서버 기능 구현
+```
+
 ## 사전 요구사항
 
 ### 시스템 요구사항
@@ -61,9 +107,8 @@ Amazon Bedrock의 Claude 3.7 Sonnet 과 Nova Pro 1.0 모델을 활용한 문서 
 - AWS CLI 구성 및 적절한 권한
 
 ### Bedrock 모델 접근 권한
-- [필수] 다음 모델 중 하나 이상에 대한 접근 권한 (us-west-2 리전)
-  - Claude 3.7 Sonnet (모델 ID: anthropic.claude-3-7-sonnet-20250219-v1:0)
-  - Nova Pro 1.0 (모델 ID: amazon.nova-pro-v1:0)
+- [필수] Claude 3.7 Sonnet 모델에 대한 접근 권한 (us-west-2 리전)
+  - 모델 ID: anthropic.claude-3-7-sonnet-20250219-v1:0
 
 ### 필요한 IAM 권한
 - Amazon Bedrock 관련:
@@ -137,9 +182,8 @@ streamlit run app.py --server.port 8080
 
 ## 챗봇 사용 방법
 
-1. **모델 선택**
+1. **모델**
    - Claude 3.7 Sonnet : 복잡한 문맥 이해가 필요한 경우
-   - Nova Pro 1.0: 빠른 응답이 필요한 경우
 
 2. **문서 업로드**
    - 지원되는 파일 형식 중 하나를 선택하여 업로드
@@ -153,9 +197,7 @@ streamlit run app.py --server.port 8080
    - Temperature: 응답의 창의성 조절 (0.0 ~ 1.0)
    - Top-P: 토큰 샘플링 확률 조절
    - Top-K: 고려할 최상위 토큰 수 설정
-   - Max Token: 최대 응답 길이 설정
-     - Claude 3.7 Sonnet: 기본 최대 8,192 토큰
-     - Nova Pro: 최대 5,000 토큰
+   - Max Token: 최대 응답 길이 설정 (기본 최대 8,192 토큰)
    - Memory Window: 대화 기억 범위 설정
 
 4. **대화하기**
@@ -193,7 +235,7 @@ streamlit run app.py --server.port 8080
 ## 스크린샷
 
 ### 챗봇 실행 화면
-모델 선택, 문서 업로드 및 Q&A 챗봇 인터페이스:
+문서 업로드 및 Q&A 챗봇 인터페이스:
 
 ![Chatbot Screenshot](../img/screenshot2.png)
 
@@ -201,6 +243,8 @@ streamlit run app.py --server.port 8080
 ## 참조
 - [Streamlit CDK Fargate](https://github.com/tzaffi/streamlit-cdk-fargate.git)
 - [AWS Bedrock Workshop](https://github.com/aws-samples/build-scale-generative-ai-applications-with-amazon-bedrock-workshop/)
+- [kyopark2014/mcp](https://github.com/kyopark2014/mcp.git)
+
 
 ## 라이선스
 이 애플리케이션은 MIT-0 라이선스를 따릅니다. LICENSE 파일을 참조하세요.

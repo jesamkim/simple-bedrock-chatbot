@@ -1,0 +1,1378 @@
+{
+ "Resources": {
+  "cdkchatbotclaude37AppVpcDB095CB4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-chatbot-claude37-stl-vpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/Resource"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPublicSubnet1Subnet51E9E9F0": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "cdkchatbotclaude37AppVpcDB095CB4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet1/Subnet"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPublicSubnet1RouteTable51CE56AC": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "cdkchatbotclaude37AppVpcDB095CB4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet1/RouteTable"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPublicSubnet1RouteTableAssociationA8003B80": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "cdkchatbotclaude37AppVpcPublicSubnet1RouteTable51CE56AC"
+    },
+    "SubnetId": {
+     "Ref": "cdkchatbotclaude37AppVpcPublicSubnet1Subnet51E9E9F0"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet1/RouteTableAssociation"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPublicSubnet1DefaultRoute4ED80CEB": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "cdkchatbotclaude37AppVpcIGW09C67664"
+    },
+    "RouteTableId": {
+     "Ref": "cdkchatbotclaude37AppVpcPublicSubnet1RouteTable51CE56AC"
+    }
+   },
+   "DependsOn": [
+    "cdkchatbotclaude37AppVpcVPCGW04DA7707"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet1/DefaultRoute"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPublicSubnet1EIPFCE9356D": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet1/EIP"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPublicSubnet1NATGatewayED8C6F4B": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "cdkchatbotclaude37AppVpcPublicSubnet1EIPFCE9356D",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "cdkchatbotclaude37AppVpcPublicSubnet1Subnet51E9E9F0"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "cdkchatbotclaude37AppVpcPublicSubnet1DefaultRoute4ED80CEB",
+    "cdkchatbotclaude37AppVpcPublicSubnet1RouteTableAssociationA8003B80"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet1/NATGateway"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPublicSubnet2SubnetFCA51443": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "cdkchatbotclaude37AppVpcDB095CB4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet2/Subnet"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPublicSubnet2RouteTable5AD6CFB4": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "cdkchatbotclaude37AppVpcDB095CB4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet2/RouteTable"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPublicSubnet2RouteTableAssociation77250FB1": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "cdkchatbotclaude37AppVpcPublicSubnet2RouteTable5AD6CFB4"
+    },
+    "SubnetId": {
+     "Ref": "cdkchatbotclaude37AppVpcPublicSubnet2SubnetFCA51443"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet2/RouteTableAssociation"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPublicSubnet2DefaultRouteDCD41B54": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "cdkchatbotclaude37AppVpcIGW09C67664"
+    },
+    "RouteTableId": {
+     "Ref": "cdkchatbotclaude37AppVpcPublicSubnet2RouteTable5AD6CFB4"
+    }
+   },
+   "DependsOn": [
+    "cdkchatbotclaude37AppVpcVPCGW04DA7707"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PublicSubnet2/DefaultRoute"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPrivateSubnet1Subnet5E92F67F": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "cdkchatbotclaude37AppVpcDB095CB4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PrivateSubnet1/Subnet"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPrivateSubnet1RouteTable4DE0DD3F": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "cdkchatbotclaude37AppVpcDB095CB4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PrivateSubnet1/RouteTable"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPrivateSubnet1RouteTableAssociationBEAD0CE6": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "cdkchatbotclaude37AppVpcPrivateSubnet1RouteTable4DE0DD3F"
+    },
+    "SubnetId": {
+     "Ref": "cdkchatbotclaude37AppVpcPrivateSubnet1Subnet5E92F67F"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PrivateSubnet1/RouteTableAssociation"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPrivateSubnet1DefaultRouteEC2C958A": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "cdkchatbotclaude37AppVpcPublicSubnet1NATGatewayED8C6F4B"
+    },
+    "RouteTableId": {
+     "Ref": "cdkchatbotclaude37AppVpcPrivateSubnet1RouteTable4DE0DD3F"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PrivateSubnet1/DefaultRoute"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPrivateSubnet2SubnetE9E31D8D": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "cdkchatbotclaude37AppVpcDB095CB4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PrivateSubnet2/Subnet"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPrivateSubnet2RouteTableF820481B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "cdkchatbotclaude37AppVpcDB095CB4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PrivateSubnet2/RouteTable"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPrivateSubnet2RouteTableAssociationD9481DCF": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "cdkchatbotclaude37AppVpcPrivateSubnet2RouteTableF820481B"
+    },
+    "SubnetId": {
+     "Ref": "cdkchatbotclaude37AppVpcPrivateSubnet2SubnetE9E31D8D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PrivateSubnet2/RouteTableAssociation"
+   }
+  },
+  "cdkchatbotclaude37AppVpcPrivateSubnet2DefaultRouteAB571E59": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "cdkchatbotclaude37AppVpcPublicSubnet1NATGatewayED8C6F4B"
+    },
+    "RouteTableId": {
+     "Ref": "cdkchatbotclaude37AppVpcPrivateSubnet2RouteTableF820481B"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/PrivateSubnet2/DefaultRoute"
+   }
+  },
+  "cdkchatbotclaude37AppVpcIGW09C67664": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-chatbot-claude37-stl-vpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/IGW"
+   }
+  },
+  "cdkchatbotclaude37AppVpcVPCGW04DA7707": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "cdkchatbotclaude37AppVpcIGW09C67664"
+    },
+    "VpcId": {
+     "Ref": "cdkchatbotclaude37AppVpcDB095CB4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/VPCGW"
+   }
+  },
+  "cdkchatbotclaude37AppVpcRestrictDefaultSecurityGroupCustomResource84EAD5D3": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "cdkchatbotclaude37AppVpcDB095CB4",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37AppVpc/RestrictDefaultSecurityGroupCustomResource/Default"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "cdkchatbotclaude37AppVpcDB095CB4",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "7fa1e366ee8a9ded01fc355f704cff92bfd179574e6f9cfee800a3541df1b200.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.7fa1e366ee8a9ded01fc355f704cff92bfd179574e6f9cfee800a3541df1b200",
+    "aws:asset:property": "Code"
+   }
+  },
+  "cdkchatbotclaude37SecurityGroupECS45801AA0": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "cdk-chatbot-claude37/cdk-chatbot-claude37SecurityGroupECS",
+    "GroupName": "cdk-chatbot-claude37-stl-ecs-sg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "cdkchatbotclaude37AppVpcDB095CB4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37SecurityGroupECS/Resource"
+   }
+  },
+  "cdkchatbotclaude37SecurityGroupECSfromcdkchatbotclaude37cdkchatbotclaude37SecurityGroupALB3BEA3BAA85017B9A4E59": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "ALB traffic",
+    "FromPort": 8501,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "cdkchatbotclaude37SecurityGroupECS45801AA0",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "cdkchatbotclaude37SecurityGroupALB00735EE1",
+      "GroupId"
+     ]
+    },
+    "ToPort": 8501
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37SecurityGroupECS/from cdkchatbotclaude37cdkchatbotclaude37SecurityGroupALB3BEA3BAA:8501"
+   }
+  },
+  "cdkchatbotclaude37SecurityGroupALB00735EE1": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "cdk-chatbot-claude37/cdk-chatbot-claude37SecurityGroupALB",
+    "GroupName": "cdk-chatbot-claude37-stl-alb-sg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow from anyone on port 80",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     }
+    ],
+    "VpcId": {
+     "Ref": "cdkchatbotclaude37AppVpcDB095CB4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37SecurityGroupALB/Resource"
+   }
+  },
+  "cdkchatbotclaude37ClusterD586C079": {
+   "Type": "AWS::ECS::Cluster",
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37Cluster/Resource"
+   }
+  },
+  "cdkchatbotclaude37ClusterF8B6BB2D": {
+   "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
+   "Properties": {
+    "CapacityProviders": [
+     "FARGATE",
+     "FARGATE_SPOT"
+    ],
+    "Cluster": {
+     "Ref": "cdkchatbotclaude37ClusterD586C079"
+    },
+    "DefaultCapacityProviderStrategy": []
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37Cluster/cdk-chatbot-claude37Cluster"
+   }
+  },
+  "cdkchatbotclaude37Alb75B24A14": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Name": "cdk-chatbot-claude37-stl",
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "cdkchatbotclaude37SecurityGroupALB00735EE1",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "cdkchatbotclaude37AppVpcPublicSubnet1Subnet51E9E9F0"
+     },
+     {
+      "Ref": "cdkchatbotclaude37AppVpcPublicSubnet2SubnetFCA51443"
+     }
+    ],
+    "Type": "application"
+   },
+   "DependsOn": [
+    "cdkchatbotclaude37AppVpcPublicSubnet1DefaultRoute4ED80CEB",
+    "cdkchatbotclaude37AppVpcPublicSubnet1RouteTableAssociationA8003B80",
+    "cdkchatbotclaude37AppVpcPublicSubnet2DefaultRouteDCD41B54",
+    "cdkchatbotclaude37AppVpcPublicSubnet2RouteTableAssociation77250FB1"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37Alb/Resource"
+   }
+  },
+  "cdkchatbotclaude37Albcdkchatbotclaude37HttpListener5DD0E0E5": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "FixedResponseConfig": {
+       "ContentType": "text/plain",
+       "MessageBody": "Access denied",
+       "StatusCode": "403"
+      },
+      "Type": "fixed-response"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "cdkchatbotclaude37Alb75B24A14"
+    },
+    "Port": 80,
+    "Protocol": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37Alb/cdk-chatbot-claude37HttpListener/Resource"
+   }
+  },
+  "cdkchatbotclaude37Albcdkchatbotclaude37HttpListenercdkchatbotclaude37TargetGroupGroup01CC10D3": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "Name": "cdk-chatbot-claude37-tg",
+    "Port": 8501,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "VpcId": {
+     "Ref": "cdkchatbotclaude37AppVpcDB095CB4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37Alb/cdk-chatbot-claude37HttpListener/cdk-chatbot-claude37TargetGroupGroup/Resource"
+   }
+  },
+  "cdkchatbotclaude37Albcdkchatbotclaude37HttpListenercdkchatbotclaude37TargetGroupRule4512AF02": {
+   "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+   "Properties": {
+    "Actions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "cdkchatbotclaude37Albcdkchatbotclaude37HttpListenercdkchatbotclaude37TargetGroupGroup01CC10D3"
+      },
+      "Type": "forward"
+     }
+    ],
+    "Conditions": [
+     {
+      "Field": "http-header",
+      "HttpHeaderConfig": {
+       "HttpHeaderName": "X-Custom-Header",
+       "Values": [
+        "My_random_value_37asv15e4s32"
+       ]
+      }
+     }
+    ],
+    "ListenerArn": {
+     "Ref": "cdkchatbotclaude37Albcdkchatbotclaude37HttpListener5DD0E0E5"
+    },
+    "Priority": 1
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37Alb/cdk-chatbot-claude37HttpListener/cdk-chatbot-claude37TargetGroupRule/Resource"
+   }
+  },
+  "cdkchatbotclaude37WebappTaskDefTaskRole7CCFF0E2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonBedrockFullAccess"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37WebappTaskDef/TaskRole/Resource"
+   }
+  },
+  "cdkchatbotclaude37WebappTaskDef46E768D0": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Essential": true,
+      "Image": {
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:11f4f77ee3741190225b06d7ebca4d9d3592e768a228e810aadb856a78ea5304"
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "cdkchatbotclaude37WebappTaskDefcdkchatbotclaude37WebContainerLogGroup09631312"
+        },
+        "awslogs-stream-prefix": "WebContainerLogs",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
+      "Name": "cdk-chatbot-claude37WebContainer",
+      "PortMappings": [
+       {
+        "ContainerPort": 8501,
+        "Protocol": "tcp"
+       }
+      ]
+     }
+    ],
+    "Cpu": "1024",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "cdkchatbotclaude37WebappTaskDefExecutionRole00676261",
+      "Arn"
+     ]
+    },
+    "Family": "cdkchatbotclaude37cdkchatbotclaude37WebappTaskDef02A9B41D",
+    "Memory": "2048",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "cdkchatbotclaude37WebappTaskDefTaskRole7CCFF0E2",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37WebappTaskDef/Resource"
+   }
+  },
+  "cdkchatbotclaude37WebappTaskDefcdkchatbotclaude37WebContainerLogGroup09631312": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37WebappTaskDef/cdk-chatbot-claude37WebContainer/LogGroup/Resource"
+   }
+  },
+  "cdkchatbotclaude37WebappTaskDefExecutionRole00676261": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37WebappTaskDef/ExecutionRole/Resource"
+   }
+  },
+  "cdkchatbotclaude37WebappTaskDefExecutionRoleDefaultPolicyC06ECFBA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":repository/",
+          {
+           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "cdkchatbotclaude37WebappTaskDefcdkchatbotclaude37WebContainerLogGroup09631312",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "cdkchatbotclaude37WebappTaskDefExecutionRoleDefaultPolicyC06ECFBA",
+    "Roles": [
+     {
+      "Ref": "cdkchatbotclaude37WebappTaskDefExecutionRole00676261"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37WebappTaskDef/ExecutionRole/DefaultPolicy/Resource"
+   }
+  },
+  "cdkchatbotclaude37ECSService47984D28": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "cdkchatbotclaude37ClusterD586C079"
+    },
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "EnableECSManagedTags": false,
+    "HealthCheckGracePeriodSeconds": 60,
+    "LaunchType": "FARGATE",
+    "LoadBalancers": [
+     {
+      "ContainerName": "cdk-chatbot-claude37WebContainer",
+      "ContainerPort": 8501,
+      "TargetGroupArn": {
+       "Ref": "cdkchatbotclaude37Albcdkchatbotclaude37HttpListenercdkchatbotclaude37TargetGroupGroup01CC10D3"
+      }
+     }
+    ],
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "cdkchatbotclaude37SecurityGroupECS45801AA0",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "cdkchatbotclaude37AppVpcPrivateSubnet1Subnet5E92F67F"
+       },
+       {
+        "Ref": "cdkchatbotclaude37AppVpcPrivateSubnet2SubnetE9E31D8D"
+       }
+      ]
+     }
+    },
+    "ServiceName": "cdk-chatbot-claude37-stl-front",
+    "TaskDefinition": {
+     "Ref": "cdkchatbotclaude37WebappTaskDef46E768D0"
+    }
+   },
+   "DependsOn": [
+    "cdkchatbotclaude37Albcdkchatbotclaude37HttpListenercdkchatbotclaude37TargetGroupRule4512AF02",
+    "cdkchatbotclaude37WebappTaskDefTaskRole7CCFF0E2"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37ECSService/Service"
+   }
+  },
+  "cdkchatbotclaude37CfDist640DDF10": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "AllowedMethods": [
+       "GET",
+       "HEAD",
+       "OPTIONS",
+       "PUT",
+       "PATCH",
+       "POST",
+       "DELETE"
+      ],
+      "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+      "Compress": true,
+      "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
+      "TargetOriginId": "cdkchatbotclaude37cdkchatbotclaude37CfDistOrigin1B8638D73",
+      "ViewerProtocolPolicy": "redirect-to-https"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "http-only",
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::GetAtt": [
+         "cdkchatbotclaude37Alb75B24A14",
+         "DNSName"
+        ]
+       },
+       "Id": "cdkchatbotclaude37cdkchatbotclaude37CfDistOrigin1B8638D73",
+       "OriginCustomHeaders": [
+        {
+         "HeaderName": "X-Custom-Header",
+         "HeaderValue": "My_random_value_37asv15e4s32"
+        }
+       ],
+       "OriginShield": {
+        "Enabled": false
+       }
+      }
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/cdk-chatbot-claude37CfDist/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31Ty27bMBD8ltxpFnYvvTp2EhgIWkEOcg1W9FrZWiIFcunAEPTvXUpWpDzQE2df5OyMtNLLX0u9vIG3sDCH06KiQrd7BnNSknpp0ax0+9wYtTna52yjslhUZPaxsMgpN6HcRcYnKCqc8lNuHYIzBEzOvjcncLfL0vEb+AEY3+CiMk9ngdPFO8voBY8NA5NrtGbh+lqjZbVHEz3x5cG72PQc/pvY2dJjCJ1CE3S7qWKQZ1LXV7iBBozMZd6d6YB+tkxQ9+BLSFuG0xaPZGnc8XPGWQay6Ge56+we/ZnMoNsAhVUFgclUDg4FVGAN2fIsXqybRgzo336U2m1fG9h+iOd9JEvYa8+IZ/UnYSHyjirNw29uyePg8DzuFEGt29wNpf7MnEz2bg0oCe1fIATkoLfOnNDvaijTlyE+S03n2LhA7PzlFgKqypVizKMr35mNuFOiSzwcvUiq260Q8VTEUfd53HUqx+CiT+qKl66eQuH5fWm0uWfR05MfohT908yfyE3kTmUXfnX2x0+9XOnVzd9AtPDRMtWo8+H8B+wFaQZbAwAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "cdk-chatbot-claude37/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "CloudFrontDistributionURL": {
+   "Value": {
+    "Fn::GetAtt": [
+     "cdkchatbotclaude37CfDist640DDF10",
+     "DomainName"
+    ]
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

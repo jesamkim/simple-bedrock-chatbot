@@ -6,4 +6,4 @@ RUN  pip3 install --upgrade pip && pip3 install -r requirements.txt
 COPY . .
 
 # Command overriden by docker-compose
-CMD streamlit run app.py
+CMD streamlit run chatbot.py

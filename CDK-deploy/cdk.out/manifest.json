@@ -1,0 +1,342 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "cdk-claude37.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-claude37.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-claude37": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-claude37.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c6c62741c5e31bfca42637a8ba32287627a70c45a2ec9b0a8fcacae4c2d76806.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-claude37.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-claude37.assets"
+      ],
+      "metadata": {
+        "/cdk-claude37/cdk-claude37AppVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcC9235425"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPublicSubnet1Subnet1557B3BE"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPublicSubnet1RouteTable8AB87C99"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPublicSubnet1RouteTableAssociationF10EBD3E"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPublicSubnet1DefaultRoute4AFFC314"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPublicSubnet1EIPB47D80E7"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPublicSubnet1NATGateway700B6966"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPublicSubnet2SubnetA29EFCCA"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPublicSubnet2RouteTable2699AC71"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPublicSubnet2RouteTableAssociation3C0E7B55"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPublicSubnet2DefaultRoute82496CC6"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPrivateSubnet1SubnetC400800E"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPrivateSubnet1RouteTableF8705395"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPrivateSubnet1RouteTableAssociation01198040"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPrivateSubnet1DefaultRouteEAC68DFA"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPrivateSubnet2Subnet97E0DEA4"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPrivateSubnet2RouteTableD369BECF"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPrivateSubnet2RouteTableAssociation061AC673"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcPrivateSubnet2DefaultRouteBFC34EE7"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcIGWC6FE7350"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcVPCGW2E4DF103"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37AppVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37AppVpcRestrictDefaultSecurityGroupCustomResource21931908"
+          }
+        ],
+        "/cdk-claude37/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/cdk-claude37/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/cdk-claude37/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37SecurityGroupECS": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
+            "trace": [
+              "Annotations.addMessage (/var/folders/0j/f40scqh96ljbsksr51hl_7h00000gn/T/jsii-kernel-73ZY2K/node_modules/aws-cdk-lib/core/lib/annotations.js:1:1608)",
+              "Annotations.addWarningV2 (/var/folders/0j/f40scqh96ljbsksr51hl_7h00000gn/T/jsii-kernel-73ZY2K/node_modules/aws-cdk-lib/core/lib/annotations.js:1:825)",
+              "SecurityGroup.addEgressRule (/var/folders/0j/f40scqh96ljbsksr51hl_7h00000gn/T/jsii-kernel-73ZY2K/node_modules/aws-cdk-lib/aws-ec2/lib/security-group.js:1:8256)",
+              "descriptor.value (/var/folders/0j/f40scqh96ljbsksr51hl_7h00000gn/T/jsii-kernel-73ZY2K/node_modules/aws-cdk-lib/core/lib/metadata-resource.js:1:2296)",
+              "/private/var/folders/0j/f40scqh96ljbsksr51hl_7h00000gn/T/tmp76s9i_nz/lib/program.js:14534:172",
+              "Kernel._Kernel_ensureSync (/private/var/folders/0j/f40scqh96ljbsksr51hl_7h00000gn/T/tmp76s9i_nz/lib/program.js:15160:24)",
+              "Kernel.invoke (/private/var/folders/0j/f40scqh96ljbsksr51hl_7h00000gn/T/tmp76s9i_nz/lib/program.js:14534:102)",
+              "KernelHost.processRequest (/private/var/folders/0j/f40scqh96ljbsksr51hl_7h00000gn/T/tmp76s9i_nz/lib/program.js:16378:36)",
+              "KernelHost.run (/private/var/folders/0j/f40scqh96ljbsksr51hl_7h00000gn/T/tmp76s9i_nz/lib/program.js:16338:22)",
+              "Immediate._onImmediate (/private/var/folders/0j/f40scqh96ljbsksr51hl_7h00000gn/T/tmp76s9i_nz/lib/program.js:16339:46)",
+              "process.processImmediate (node:internal/timers:478:21)"
+            ]
+          }
+        ],
+        "/cdk-claude37/cdk-claude37SecurityGroupECS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37SecurityGroupECS28A1ED9E"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37SecurityGroupECS/from cdkclaude37cdkclaude37SecurityGroupALBA105F7D7:8501": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37SecurityGroupECSfromcdkclaude37cdkclaude37SecurityGroupALBA105F7D785019270C68D"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37SecurityGroupALB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37SecurityGroupALB9BEA01F6"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37Cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37Cluster4C081596"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37Cluster/cdk-claude37Cluster": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37Cluster8E1308E4"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37Alb/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37Alb11D6988B"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37Alb/cdk-claude37HttpListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37Albcdkclaude37HttpListener2F9594D0"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37Alb/cdk-claude37HttpListener/cdk-claude37TargetGroupGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37Albcdkclaude37HttpListenercdkclaude37TargetGroupGroupFED4A94B"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37Alb/cdk-claude37HttpListener/cdk-claude37TargetGroupRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37Albcdkclaude37HttpListenercdkclaude37TargetGroupRule7312F216"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37WebappTaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37WebappTaskDefTaskRoleF45C4E39"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37WebappTaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37WebappTaskDef322CDECC"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37WebappTaskDef/cdk-claude37WebContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37WebappTaskDefcdkclaude37WebContainerLogGroup42FE51CE"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37WebappTaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37WebappTaskDefExecutionRoleB7B48F10"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37WebappTaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37WebappTaskDefExecutionRoleDefaultPolicy75F1A89C"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37ECSService/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37ECSService2221A64D"
+          }
+        ],
+        "/cdk-claude37/cdk-claude37CfDist/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cdkclaude37CfDist814A5233"
+          }
+        ],
+        "/cdk-claude37/CloudFrontDistributionURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudFrontDistributionURL"
+          }
+        ],
+        "/cdk-claude37/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/cdk-claude37/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/cdk-claude37/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-claude37/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-claude37"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

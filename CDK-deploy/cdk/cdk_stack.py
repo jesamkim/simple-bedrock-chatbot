@@ -53,6 +53,13 @@ class CdkStack(Stack):
             connection=ec2.Port.tcp(8501),
             description="ALB traffic",
         )
+        
+        # Add outbound rule for HTTPS traffic to allow internet access for search functionality
+        ecs_security_group.add_egress_rule(
+            peer=ec2.Peer.any_ipv4(),
+            connection=ec2.Port.tcp(443),
+            description="Allow HTTPS outbound traffic for internet searches",
+        )
 
         # ECS cluster and service definition
         cluster = ecs.Cluster(
@@ -93,6 +100,7 @@ class CdkStack(Stack):
             logging=ecs.LogDrivers.aws_logs(stream_prefix="WebContainerLogs"),
         )
 
+        # Modified: Add deployment configuration and circuit breaker to speed up deployment
         service = ecs.FargateService(
             self,
             f"{prefix}ECSService",
@@ -102,6 +110,15 @@ class CdkStack(Stack):
             security_groups=[ecs_security_group],
             vpc_subnets=ec2.SubnetSelection(
                 subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
+            deployment_controller=ecs.DeploymentController(
+                type=ecs.DeploymentControllerType.ECS
+            ),
+            circuit_breaker=ecs.DeploymentCircuitBreaker(
+                rollback=True
+            ),
+            # Configure minimum healthy percent and maximum percent for faster deployments
+            min_healthy_percent=50,
+            max_healthy_percent=200
         )
 
         # Grant access to Bedrock
