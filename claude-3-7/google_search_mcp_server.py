@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import requests
+import os
 import argparse
 import json
 from typing import List, Dict, Any, Optional
-from bs4 import BeautifulSoup
 import nltk
 
 # NLTK 데이터 다운로드 체크
@@ -18,23 +18,24 @@ except LookupError:
 
 from nltk.corpus import stopwords
 
-class DuckDuckGoServer:
-    """DuckDuckGo 검색 기능을 제공하는 서버 클래스"""
+class GoogleSearchServer:
+    """Google Custom Search API를 사용하는 검색 기능을 제공하는 서버 클래스"""
     
     def __init__(self, max_results: int = 5):
         """
-        DuckDuckGoServer 초기화
+        GoogleSearchServer 초기화
         
         Args:
             max_results: 검색 결과 최대 개수 (기본값: 5)
         """
         self.max_results = max_results
-        self.base_url = "https://html.duckduckgo.com/html/"
+        self.api_key = os.environ.get('GOOGLE_API_KEY')
+        self.search_engine_id = os.environ.get('GOOGLE_SEARCH_ENGINE_ID')
         
-        # 검색 요청 헤더 설정
-        self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
+        if not self.api_key or not self.search_engine_id:
+            print("경고: Google API Key 또는 Search Engine ID가 설정되지 않았습니다. 환경 변수를 확인하세요.")
+            print("GOOGLE_API_KEY와 GOOGLE_SEARCH_ENGINE_ID 환경 변수를 설정해야 합니다.")
+            # 실제 검색 시에 오류 발생 처리
     
     def extract_keywords(self, text: str) -> List[str]:
         """
@@ -66,7 +67,7 @@ class DuckDuckGoServer:
     
     def search(self, query: str) -> List[Dict[str, str]]:
         """
-        DuckDuckGo 검색을 수행하여 검색 결과를 반환합니다.
+        Google Custom Search API를 사용해 검색을 수행하여 결과를 반환합니다.
         
         Args:
             query: 검색 쿼리 문자열
@@ -74,67 +75,63 @@ class DuckDuckGoServer:
         Returns:
             검색 결과 목록 (딕셔너리 리스트)
         """
+        # API 키와 검색 엔진 ID 확인
+        if not self.api_key or not self.search_engine_id:
+            return [{
+                "title": "검색 설정 오류",
+                "content": "Google API Key 또는 Search Engine ID가 설정되지 않았습니다. 환경 변수를 확인하세요.",
+                "url": ""
+            }]
+        
         try:
-            # 검색 요청 실행
-            response = requests.get(
-                self.base_url,
-                params={'q': query},
-                headers=self.headers,
-                timeout=10  # 타임아웃 추가
-            )
+            # Google Custom Search API 요청
+            url = "https://www.googleapis.com/customsearch/v1"
+            params = {
+                'key': self.api_key,
+                'cx': self.search_engine_id,
+                'q': query,
+                'num': min(self.max_results, 10)  # Google API는 최대 10개까지만 허용
+            }
+            
+            response = requests.get(url, params=params, timeout=10)
             response.raise_for_status()
             
-            # HTML 파싱
-            soup = BeautifulSoup(response.text, 'html.parser')
+            search_results = response.json()
             results = []
             
-            # 검색 결과 추출
-            for result in soup.select('.result'):
-                title_elem = result.select_one('.result__title')
-                snippet_elem = result.select_one('.result__snippet')
-                link_elem = result.select_one('.result__url')
-                
-                if title_elem and snippet_elem:
-                    title = title_elem.get_text().strip()
-                    snippet = snippet_elem.get_text().strip()
-                    url = ""
+            if 'items' in search_results:
+                for item in search_results['items']:
+                    title = item.get('title', '제목 없음')
+                    snippet = item.get('snippet', '내용 없음')
+                    link = item.get('link', '')
                     
-                    # URL이 있는 경우 추출
-                    if link_elem:
-                        url = link_elem.get_text().strip()
-                    # a 태그에서 href 속성을 추출하는 방법 (일부 경우에 필요)
-                    elif title_elem.find('a'):
-                        url_href = title_elem.find('a').get('href', '')
-                        # DuckDuckGo는 때로 URL을 리디렉션 형태로 제공
-                        if url_href.startswith('/'):
-                            url = "https://duckduckgo.com" + url_href
-                        else:
-                            url = url_href
-                    
-                    # 결과 추가
                     results.append({
                         "title": title,
                         "content": snippet,
-                        "url": url
+                        "url": link
                     })
                     
                     # 최대 결과 수에 도달하면 중단
                     if len(results) >= self.max_results:
                         break
             
-            # 결과가 없을 경우 로그 출력
+            # 결과가 없을 경우 메시지 반환
             if not results:
-                print(f"'{query}' 검색 결과가 없습니다. HTML 응답 길이: {len(response.text)} 바이트")
+                print(f"'{query}' 검색 결과가 없습니다.")
+                return [{
+                    "title": "검색 결과 없음",
+                    "content": f"'{query}'에 대한 검색 결과를 찾을 수 없습니다.",
+                    "url": ""
+                }]
             
             return results
-        
+            
         except requests.exceptions.RequestException as e:
             error_msg = f"네트워크 요청 오류: {str(e)}"
             print(error_msg)
-            # 빈 리스트 대신 오류 정보를 포함한 결과 반환
             return [{
                 "title": "검색 오류",
-                "content": f"DuckDuckGo 검색 중 네트워크 오류가 발생했습니다: {str(e)}",
+                "content": f"Google 검색 중 네트워크 오류가 발생했습니다: {str(e)}",
                 "url": ""
             }]
         except Exception as e:
@@ -174,15 +171,15 @@ class DuckDuckGoServer:
 
 
 def main():
-    """CLI 인터페이스로 DuckDuckGo 검색 기능 실행"""
-    parser = argparse.ArgumentParser(description="DuckDuckGo 검색 CLI")
+    """CLI 인터페이스로 Google 검색 기능 실행"""
+    parser = argparse.ArgumentParser(description="Google Search CLI")
     parser.add_argument('query', help='검색할 쿼리')
     parser.add_argument('--max-results', type=int, default=5, help='최대 결과 수 (기본값: 5)')
     parser.add_argument('--json', action='store_true', help='JSON 형식으로 출력')
     
     args = parser.parse_args()
     
-    server = DuckDuckGoServer(max_results=args.max_results)
+    server = GoogleSearchServer(max_results=args.max_results)
     results = server.search(args.query)
     
     if args.json:

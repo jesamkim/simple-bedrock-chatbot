@@ -1,6 +1,6 @@
 # Simple Bedrock Chatbot
 
-Amazon Bedrock을 활용한 streamlit 기반 문서 Q&A 챗봇 프로젝트 입니다.
+Amazon Bedrock을 기반으로 한 MCP를 활용한 문서 Q&A 챗봇 프로젝트 입니다.
 
 ## 주요 기능
 
@@ -35,13 +35,13 @@ Amazon Bedrock을 활용한 streamlit 기반 문서 Q&A 챗봇 프로젝트 입�
      - `get_datetime_info`: 종합적인 날짜/시간 정보 제공 (시간대, 경과 시간, 남은 시간 등)
    - **특징**: 한국어 날짜/시간 표기, 시간대 설정(기본: Asia/Seoul), 시간 간격 계산
 
-2. **DuckDuckGo MCP 서버**
-   - **기능**: 실시간 웹 검색 결과 제공
+2. **Google Search MCP 서버**
+   - **기능**: Google Custom Search API를 통한 실시간 웹 검색 결과 제공
    - **주요 기능**:
      - 검색 쿼리 처리 및 결과 반환 (제목, 내용, URL)
      - 텍스트에서 중요 키워드 자동 추출
      - 검색 결과 포맷팅 및 정리
-   - **특징**: 최대 결과 개수 조정 가능, 불용어 제거, 빈도 기반 키워드 추출
+   - **특징**: 최대 결과 개수 조정 가능, 불용어 제거, 빈도 기반 키워드 추출, Google의 고품질 검색 결과
 
 #### MCP 활용 예시
 - **실시간 정보 질의**: "지금 몇 시야?", "오늘 날짜가 어떻게 돼?" 등의 질문에 현재 시간 정보 제공
@@ -91,8 +91,7 @@ cd simple-bedrock-chatbot
 ```bash
 python3 -m venv venv
 source venv/bin/activate  # Linux/Mac
-# 또는
-.\venv\Scripts\activate  # Windows
+
 ```
 
 3. 필요한 패키지 설치
@@ -155,9 +154,9 @@ streamlit run app.py --server.port 8080
 - **시간 계산**: 오늘 경과 시간, 남은 시간, 올해 경과일, 남은 일수
 - **시간대 처리**: 기본 시간대는 Asia/Seoul, 커스터마이징 가능
 
-### DuckDuckGo MCP 서버 활용
+### Google Search MCP 서버 활용
 - **키워드 추출**: 입력 텍스트에서 주요 검색 키워드 자동 추출
-- **웹 검색**: DuckDuckGo 검색 엔진을 통한 최신 정보 검색
+- **웹 검색**: Google Custom Search API를 통한 최신 정보 검색
 - **결과 처리**: 제목, 내용 요약, 출처 URL을 포함한 구조화된 검색 결과 제공
 - **결과 통합**: 검색 결과를 기반으로 모델이 종합적인 응답 생성
 
@@ -206,10 +205,14 @@ streamlit run app.py --server.port 8080
 # AWS CLI 설정
 aws configure
 
-# 또는 환경 변수 설정
+# 또는 AWS 환경 변수 설정 (AWS 부분은 앞서 aws configure 로 했으면 생략)
 export AWS_ACCESS_KEY_ID=your_access_key
 export AWS_SECRET_ACCESS_KEY=your_secret_key
 export AWS_DEFAULT_REGION=us-west-2
+
+# Google API Key 및 Engine ID 는 발급받아서 환경변수로 등록 필요
+export GOOGLE_API_KEY=your-api-key-here
+export GOOGLE_SEARCH_ENGINE_ID=your-search-engine-id-here
 ```
 
 ## 오류 처리
@@ -236,7 +239,7 @@ export AWS_DEFAULT_REGION=us-west-2
    - Claude 3.7 Sonnet: 더 정확한 문맥 이해와 응답 생성, Model reasoning 모드 지원
 
 5. MCP 기능 관련 주의사항
-   - 웹 검색 결과는 DuckDuckGo 검색 엔진에 의존
+   - 웹 검색 결과는 Google Custom Search API에 의존하며 API 키와 검색 엔진 ID가 필요합니다
    - 날짜/시간 정보는 서버의 시간대 설정에 따라 달라질 수 있음
    - MCP 모드 사용 시 Model reasoning 모드는 비활성화됨
 

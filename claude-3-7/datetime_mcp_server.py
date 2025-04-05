@@ -42,17 +42,17 @@ class DatetimeMCPServer:
             }
         except Exception as e:
             print(f"시간 정보 가져오기 중 오류: {str(e)}")
-            # 기본 시간 정보 제공 (UTC)
-            now = datetime.datetime.now(pytz.UTC)
+            # Asia/Seoul 시간대 강제 적용 (UTC+9)
+            now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
             return {
                 "hour": now.hour,
                 "minute": now.minute,
                 "second": now.second,
-                "ampm": "AM" if now.hour < 12 else "PM",
+                "ampm": "오전" if now.hour < 12 else "오후",
                 "hour_12": now.hour % 12 if now.hour % 12 != 0 else 12,
-                "timezone": "UTC",
-                "timezone_name": "UTC",
-                "timezone_offset": 0,
+                "timezone": "Asia/Seoul",
+                "timezone_name": "KST",
+                "timezone_offset": 9,
                 "timestamp": now.timestamp(),
                 "error": str(e)
             }
@@ -89,15 +89,27 @@ class DatetimeMCPServer:
             }
         except Exception as e:
             print(f"날짜 정보 가져오기 중 오류: {str(e)}")
-            # 기본 날짜 정보 제공 (UTC)
-            now = datetime.datetime.now(pytz.UTC)
+            # Asia/Seoul 시간대 강제 적용 (UTC+9)
+            now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+            
+            # 한국어 요일 변환
+            weekday_kr = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+            weekday_en = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            month_kr = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"]
+            
             return {
                 "year": now.year,
                 "month": now.month,
                 "day": now.day,
                 "weekday": now.weekday(),
-                "weekday_en": now.strftime("%A"),
+                "weekday_kr": weekday_kr[now.weekday()],
+                "weekday_en": weekday_en[now.weekday()],
+                "month_name_kr": month_kr[now.month - 1],
                 "month_name_en": now.strftime("%B"),
+                "day_of_year": now.timetuple().tm_yday,
+                "week_of_year": int(now.strftime("%V")),
+                "is_leap_year": self._is_leap_year(now.year),
+                "days_in_month": self._days_in_month(now.year, now.month),
                 "error": str(e)
             }
     
@@ -149,9 +161,39 @@ class DatetimeMCPServer:
             
         except Exception as e:
             print(f"종합 날짜/시간 정보 생성 중 오류: {str(e)}")
-            # 기본 정보만 반환
-            combined_info = {**date_info, **time_info, "error": str(e)}
-            return combined_info
+            
+            try:
+                # Asia/Seoul 시간대 강제 적용 (UTC+9)
+                now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+                
+                # 오늘이 지난 시간 계산 (일 시작부터)
+                start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+                elapsed_seconds = (now - start_of_day).total_seconds()
+                
+                # 오늘 남은 시간 계산
+                end_of_day = start_of_day + datetime.timedelta(days=1)
+                remaining_seconds = (end_of_day - now).total_seconds()
+                
+                # ISO 표준 날짜/시간 문자열
+                iso_format = now.isoformat()
+                
+                # 추가 정보 (최소한)
+                additional_info = {
+                    "iso_format": iso_format,
+                    "elapsed_seconds_today": int(elapsed_seconds),
+                    "remaining_seconds_today": int(remaining_seconds),
+                    "datetime_kr": now.strftime("%Y년 %m월 %d일") + f" {time_info['ampm']} {time_info['hour_12']}시 {time_info['minute']}분"
+                }
+                
+                # 딕셔너리 통합
+                combined_info = {**date_info, **time_info, **additional_info, "error": str(e)}
+                return combined_info
+                
+            except Exception as inner_e:
+                print(f"백업 시간 정보 생성 중 오류: {str(inner_e)}")
+                # 기본 정보만 반환
+                combined_info = {**date_info, **time_info, "error": f"{str(e)} (추가 오류: {str(inner_e)})"}
+                return combined_info
     
     def _is_leap_year(self, year: int) -> bool:
         """윤년 여부 확인"""
