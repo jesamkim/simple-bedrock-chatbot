@@ -183,7 +183,7 @@ streamlit run app.py --server.port 8080
 ## 챗봇 사용 방법
 
 1. **모델**
-   - Claude 3.7 Sonnet : 복잡한 문맥 이해가 필요한 경우
+   - Claude 3.7 Sonnet
 
 2. **문서 업로드**
    - 지원되는 파일 형식 중 하나를 선택하여 업로드
