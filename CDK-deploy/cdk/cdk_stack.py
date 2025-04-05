@@ -1,3 +1,4 @@
+import os
 from aws_cdk import (
     # Duration,
     Stack,
@@ -89,6 +90,9 @@ class CdkStack(Stack):
         # Build Dockerfile from local folder and push to ECR
         image = ecs.ContainerImage.from_asset('docker_app')
 
+        # 코드 임포트 추가 (파일 상단에 추가해야 하지만 여기서는 클래스 내부에 사용되므로 참고만 하세요)
+        # import os
+
         fargate_task_definition.add_container(
             f"{prefix}WebContainer",
             # Use an image from DockerHub
@@ -98,6 +102,12 @@ class CdkStack(Stack):
                     container_port=8501,
                     protocol=ecs.Protocol.TCP)],
             logging=ecs.LogDrivers.aws_logs(stream_prefix="WebContainerLogs"),
+            # 환경 변수 추가
+            environment={
+                "AWS_REGION": self.region,  # CDK 스택의 리전 사용
+                "GOOGLE_API_KEY": os.environ.get("GOOGLE_API_KEY", ""),  # 배포 시 제공될 Google API Key
+                "GOOGLE_SEARCH_ENGINE_ID": os.environ.get("GOOGLE_SEARCH_ENGINE_ID", ""),  # 검색 엔진 ID
+            },
         )
 
         # Modified: Add deployment configuration and circuit breaker to speed up deployment
