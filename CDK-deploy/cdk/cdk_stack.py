@@ -31,9 +31,7 @@ class CdkStack(Stack):
             ip_addresses=ec2.IpAddresses.cidr("10.0.0.0/16"),
             max_azs=2,
             vpc_name=f"{prefix}-stl-vpc",
-            nat_gateways=2, # 모든 AZ에 NAT Gateway 배포
-            enable_dns_hostnames=True,
-            enable_dns_support=True,
+            nat_gateways=1,
         )
 
         ecs_security_group = ec2.SecurityGroup(
@@ -56,18 +54,11 @@ class CdkStack(Stack):
             description="ALB traffic",
         )
         
-        # Add outbound rules for HTTP/HTTPS traffic to allow internet access for search functionality
+        # Add outbound rule for HTTPS traffic to allow internet access for search functionality
         ecs_security_group.add_egress_rule(
             peer=ec2.Peer.any_ipv4(),
             connection=ec2.Port.tcp(443),
             description="Allow HTTPS outbound traffic for internet searches",
-        )
-        
-        # Add HTTP outbound rule as well (many sites redirect HTTP to HTTPS)
-        ecs_security_group.add_egress_rule(
-            peer=ec2.Peer.any_ipv4(),
-            connection=ec2.Port.tcp(80),
-            description="Allow HTTP outbound traffic for internet searches",
         )
 
         # ECS cluster and service definition
