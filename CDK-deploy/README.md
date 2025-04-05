@@ -108,7 +108,7 @@ class CustomMCPServer:
 
 ### Bedrock 모델 접근 권한
 - [필수] Claude 3.7 Sonnet 모델에 대한 접근 권한 (us-west-2 리전)
-  - 모델 ID: anthropic.claude-3-7-sonnet-20250219-v1:0
+  - 모델 ID: "us.anthropic.claude-3-7-sonnet-20250219-v1:0"
 
 ### 필요한 IAM 권한
 - Amazon Bedrock 관련:
