@@ -89,7 +89,7 @@ cd simple-bedrock-chatbot
 
 2. 가상환경 생성 및 활성화 (선택사항)
 ```bash
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate  # Linux/Mac
 # 또는
 .\venv\Scripts\activate  # Windows
