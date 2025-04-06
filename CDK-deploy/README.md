@@ -78,7 +78,7 @@ Model Context Protocol(MCP)의 호출 흐름은 다음과 같은 계층 구조�
 
 3. 가상환경 생성 및 활성화:
    ```bash
-   python -m venv .venv
+   python3 -m venv .venv
    source .venv/bin/activate  # Linux/macOS
    ```
 
