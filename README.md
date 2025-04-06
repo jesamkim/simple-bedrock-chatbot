@@ -27,7 +27,14 @@ Amazon Bedrock을 기반으로 한 MCP를 활용한 문서 Q&A 챗봇 프로젝�
 - **MCP 작동 모드**: 기본 모드와 함께 선택적으로 활성화 가능한 특수 모드
 
 #### MCP 호출 흐름 및 아키텍처
-- **계층 구조**: 호스트 앱(app.py) → MCP 클라이언트 → MCP 서버 → 외부 서비스
+#### MCP 호출 흐름
+
+Model Context Protocol(MCP)의 호출 흐름은 다음과 같은 계층 구조로 이루어집니다:
+
+```
+[호스트 앱 - app.py] → [MCP Client] → [MCP Server] → [외부 서비스/API]
+```
+
 - **통신 방식**: 
   - stdio 기반 통신 (`StdioServerTransport` 클래스 활용)
   - Python asyncio를 활용한 비동기 구현

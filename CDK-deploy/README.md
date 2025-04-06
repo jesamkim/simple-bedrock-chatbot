@@ -64,17 +64,36 @@ Model Context Protocol(MCP)의 호출 흐름은 다음과 같은 계층 구조�
 
 ## 설치 및 실행 방법
 
-1. 필요한 패키지 설치:
+1. 프로젝트 클론:
+   ```bash
+   git clone https://github.com/사용자명/simple-bedrock-chatbot.git
+   cd simple-bedrock-chatbot
+   ```
+
+2. CDK-deploy 디렉토리로 이동:
+   ```bash
+   cd CDK-deploy
+   ```
+
+3. 가상환경 생성 및 활성화:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # Linux/macOS
+   # 또는
+   .venv\Scripts\activate     # Windows
+   ```
+
+4. 필요한 패키지 설치:
    ```bash
    pip install -r requirements.txt
    ```
 
-2. 애플리케이션 실행:
+5. 애플리케이션 실행:
    ```bash
    streamlit run app.py
    ```
 
-3. 웹 브라우저에서 인터페이스 접속 (기본: http://localhost:8501)
+6. 웹 브라우저에서 인터페이스 접속 (기본: http://localhost:8501)
 
 ## 프로젝트 구조
 
