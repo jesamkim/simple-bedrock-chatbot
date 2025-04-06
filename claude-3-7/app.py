@@ -148,7 +148,7 @@ def get_sidebar_params() -> Tuple[float, float, int, int, int, str, object, str,
         mode = st.radio(
             "작동 모드 선택",
             options=["기본 모드", "MCP 모드", "Reasoning 모드"],
-            index=0,
+            index=1,
             help="기본 모드: 일반 챗봇 기능, MCP 모드: 웹 검색 및 현재 시간/날짜 정보 제공, Reasoning 모드: 복잡한 문제 해결에 특화된 사고 과정 제공",
             key=f"{st.session_state['widget_key']}_Mode"
         )
@@ -429,7 +429,7 @@ def generate_response(
                 reasoning = intent_analysis.get("reasoning", "")
                 
                 # 분석 결과 표시
-                with st.expander("🧩 질의 의도 분석 결과", expanded=True):
+                with st.expander("🧩 질의 의도 분석 결과", expanded=False):
                     st.markdown(f"""
                     **의도 유형:** {intent} {f'({subtype})' if subtype and subtype != 'none' else ''}
                     **날짜/시간 정보 필요:** {'✅' if datetime_needed else '❌'}

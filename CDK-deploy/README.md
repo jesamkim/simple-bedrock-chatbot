@@ -15,6 +15,33 @@
 
 ### MCP 기능 
 
+#### MCP 호출 흐름
+
+Model Context Protocol(MCP)의 호출 흐름은 다음과 같은 계층 구조로 이루어집니다:
+
+```
+[호스트 앱 - app.py] → [MCP Client] → [MCP Server] → [외부 서비스/API]
+```
+
+1. **호스트 애플리케이션(app.py)**
+   - Streamlit 기반 메인 애플리케이션
+   - MCP 클라이언트를 초기화하고 필요시 해당 기능 호출
+   - 사용자 질의 의도를 분석하여 적절한 MCP 서비스 선택
+
+2. **MCP 클라이언트**
+   - `XXX_mcp_client.py` 파일로 구현
+   - 호스트 앱과 MCP 서버 간의 인터페이스 제공
+   - 서버 클래스를 인스턴스화하여 기능 호출
+
+3. **MCP 서버**
+   - `XXX_mcp_server.py`에서 실제 기능 구현
+   - `XXX_mcp.py`는 MCP SDK 기반 서버 인터페이스 제공
+   - 비동기(asyncio) 방식으로 구현
+   - stdio 기반 통신(`StdioServerTransport` 클래스 사용)
+
+4. **외부 서비스/API**
+   - Google Custom Search API, 시스템 날짜/시간 기능 등 실제 서비스
+
 #### 1. Google 웹 검색 기능
 - 사용자 질문에서 관련 키워드를 추출하여 Google 검색 API를 통해 웹 검색 수행
 - 검색 결과를 가독성 있게 포맷팅하여 모델에게 제공
