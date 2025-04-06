@@ -88,7 +88,7 @@ Model Context Protocol(MCP)의 호출 흐름은 다음과 같은 계층 구조�
    ```
 
 5. 환경 변수 설정:
-#### Google 검색 기능을 사용하기 위해 GOOGLE_API_KEY, GOOGLE_SEARCH_ENGINE_ID에 대한 환경변수 등록이 필요합니다.
+<b>Google 검색 기능을 사용하기 위해 GOOGLE_API_KEY, GOOGLE_SEARCH_ENGINE_ID에 대한 환경변수 등록이 필요합니다.</b>
 
    ```bash
    export AWS_ACCESS_KEY_ID="your-aws-access-key"
