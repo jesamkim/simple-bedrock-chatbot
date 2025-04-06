@@ -1,4 +1,4 @@
-# Claude 3.7 Sonnet MCP 챗봇
+# CDK 배포 - Claude 3.7 Sonnet MCP 챗봇
 
 ## 아키텍처 구성도
 
@@ -10,34 +10,34 @@ flowchart LR
     
     %% 서브그래프로 ECS 컨테이너 내부 구조 표현
     subgraph ECSContainer[ECS 컨테이너 내부]
-        App[호스트 앱 : app.py / Streamlit] --> MCPClients[MCP 클라이언트 : XXX_mcp_client.py]
-        MCPClients --> MCPServers[MCP 서버 : XXX_mcp_server.py]
-        MCPServers --> ExternalAPIs[외부 서비스/API]
+        App[호스트 앱 : app.py / Streamlit] --> UnifiedClient[통합 MCP 클라이언트 : mcp_client.py]
+        UnifiedClient --> UnifiedServer[통합 MCP 서버 : mcp.py]
+        UnifiedServer --> Services[서비스 컨테이너]
         
-        %% 구체적인 MCP 기능들
-        subgraph MCPFunctions[MCP 기능]
-            GoogleSearch[Google 웹 검색]
-            DateTime[날짜/시간 정보]
-        end
+        %% 서비스들
+        Services --> DTService[날짜/시간 서비스 : datetime_mcp_server.py]
+        Services --> SearchService[검색 서비스 : google_search_mcp_server.py]
         
-        MCPServers --- MCPFunctions
+        %% 외부 API 연결
+        DTService --> SystemTime[시스템 날짜/시간]
+        SearchService --> GoogleAPI[Google Search API]
     end
     
     ECS --> Bedrock[Amazon Bedrock - Claude 3.7 Sonnet]
-    ExternalAPIs --> GoogleAPI[Google Search API]
-    ExternalAPIs --> SystemTime[시스템 날짜/시간]
     
     %% 스타일 정의
     classDef aws fill:#FF9900,stroke:#232F3E,stroke-width:2px,color:#232F3E;
     classDef client fill:#D4F4FA,stroke:#0078D4,stroke-width:2px,color:#000000;
     classDef mcp fill:#B9EDDD,stroke:#0B666A,stroke-width:2px,color:#000000;
+    classDef service fill:#E8DAEF,stroke:#8E44AD,stroke-width:2px,color:#000000;
     classDef external fill:#F8F0E5,stroke:#35374B,stroke-width:1px,color:#000000;
     
     %% 스타일 적용
     class CloudFront,ALB,ECS,Bedrock aws;
     class Client client;
-    class App,MCPClients,MCPServers,MCPFunctions,GoogleSearch,DateTime mcp;
-    class ExternalAPIs,GoogleAPI,SystemTime external;
+    class App,UnifiedClient,UnifiedServer mcp;
+    class Services,DTService,SearchService service;
+    class GoogleAPI,SystemTime external;
 ```
 
 ## 아키텍처 개요
@@ -75,40 +75,53 @@ Model Context Protocol(MCP)의 호출 흐름은 다음과 같은 계층 구조�
 
 ```mermaid
 flowchart LR
-    HostApp[호스트 앱 - app.py] --> MCPClient[MCP 클라이언트 : XXX_mcp_client.py]
-    MCPClient --> MCPServer[MCP 서버 : XXX_mcp_server.py]
-    MCPServer --> ExternalAPI[외부 서비스/API]
+    HostApp[호스트 앱 - app.py] --> UnifiedClient[통합 MCP 클라이언트 - mcp_client.py]
+    UnifiedClient --> UnifiedServer[통합 MCP 서버 - mcp.py]
+    UnifiedServer --> Services[서비스 컨테이너]
+    Services --> DTService[날짜/시간 서비스]
+    Services --> SearchService[검색 서비스]
+    Services --> OtherService[기타 서비스...]
+    DTService --> ExternalAPI1[시스템 시간 API]
+    SearchService --> ExternalAPI2[Google Search API]
+    OtherService --> ExternalAPI3[기타 외부 API]
     
     %% 스타일 정의
     classDef host fill:#D4E6F1,stroke:#3498DB,stroke-width:2px,color:#000000;
     classDef client fill:#D5F5E3,stroke:#2ECC71,stroke-width:2px,color:#000000;
     classDef server fill:#FCF3CF,stroke:#F1C40F,stroke-width:2px,color:#000000;
+    classDef service fill:#E8DAEF,stroke:#8E44AD,stroke-width:2px,color:#000000;
     classDef external fill:#FADBD8,stroke:#E74C3C,stroke-width:2px,color:#000000;
     
     %% 스타일 적용
     class HostApp host;
-    class MCPClient client;
-    class MCPServer server;
-    class ExternalAPI external;
+    class UnifiedClient client;
+    class UnifiedServer server;
+    class Services,DTService,SearchService,OtherService service;
+    class ExternalAPI1,ExternalAPI2,ExternalAPI3 external;
 ```
 
 1. **호스트 애플리케이션(app.py)**
    - Streamlit 기반 메인 애플리케이션
-   - MCP 클라이언트를 초기화하고 필요시 해당 기능 호출
+   - 통합 MCP 클라이언트를 초기화하고 필요시 해당 기능 호출
    - 사용자 질의 의도를 분석하여 적절한 MCP 서비스 선택
 
-2. **MCP 클라이언트**
-   - `XXX_mcp_client.py` 파일로 구현
-   - 호스트 앱과 MCP 서버 간의 인터페이스 제공
-   - 서버 클래스를 인스턴스화하여 기능 호출
+2. **통합 MCP 클라이언트**
+   - `mcp_client.py` 파일로 구현
+   - 호스트 앱과 통합 MCP 서버 간의 인터페이스 제공
+   - 일관된 API를 통해 모든 서비스 접근 가능
 
-3. **MCP 서버**
-   - `XXX_mcp_server.py`에서 실제 기능 구현
-   - `XXX_mcp.py`는 MCP SDK 기반 서버 인터페이스 제공
+3. **통합 MCP 서버**
+   - `mcp.py`에서 여러 서비스를 통합 관리
+   - 설정 파일(`mcp_config.json`)에 기반한 서비스 동적 로드
+   - 도구 요청을 적절한 서비스로 라우팅
    - 비동기(asyncio) 방식으로 구현
    - stdio 기반 통신(`StdioServerTransport` 클래스 사용)
 
-4. **외부 서비스/API**
+4. **서비스 구현**
+   - `XXX_mcp_server.py` 파일에서 실제 기능 구현
+   - 독립적인 서비스 클래스로 구현되어 쉽게 확장 가능
+
+5. **외부 서비스/API**
    - Google Custom Search API, 시스템 날짜/시간 기능 등 실제 서비스
 
 ### MCP 구현 기능 설명 
@@ -132,7 +145,117 @@ flowchart LR
 2. **MCP 모드**: 웹 검색 및 날짜/시간 정보 제공 기능 활성화
 3. **Reasoning 모드**: Claude 3.7의 사고 과정(Thinking)을 볼 수 있는 모드
 
-## 설치 및 실행 방법
+## 새로운 MCP 서비스 추가 가이드
+
+통합 MCP 구조를 활용하여 새로운 서비스를 쉽게 추가할 수 있습니다:
+
+### 1. 서비스 구현 클래스 생성
+`XXX_mcp_server.py` 파일에 새 서비스를 구현합니다:
+
+```python
+class NewService:
+    """새로운 MCP 서비스 구현"""
+    
+    def __init__(self, param1="default", param2="default"):
+        """서비스 초기화"""
+        self.param1 = param1
+        self.param2 = param2
+    
+    def some_tool_method(self, arg1, arg2=None):
+        """도구 기능 구현"""
+        # 기능 구현 코드
+        result = {"some_key": "some_value"}
+        return result
+    
+    def format_result(self, result):
+        """결과 포맷팅"""
+        # 결과를 읽기 쉬운 형태로 변환
+        return f"포맷된 결과: {result['some_key']}"
+```
+
+### 2. 설정 파일에 서비스 등록
+`mcp_config.json` 파일에 새 서비스를 추가합니다:
+
+```json
+{
+  "services": [
+    {
+      "name": "datetime",
+      "module": "datetime_mcp_server",
+      "class": "DatetimeServer",
+      "params": {
+        "timezone": "Asia/Seoul"
+      }
+    },
+    {
+      "name": "search",
+      "module": "google_search_mcp_server",
+      "class": "GoogleSearchServer",
+      "params": {
+        "max_results": 5
+      }
+    },
+    {
+      "name": "new_service_name",
+      "module": "new_service_mcp_server",
+      "class": "NewService",
+      "params": {
+        "param1": "value1",
+        "param2": "value2"
+      }
+    }
+  ]
+}
+```
+
+### 3. 필요한 경우 MCP 서버 확장
+특수한 처리 로직이 필요한 경우, `mcp.py` 파일을 수정합니다:
+
+1. `_get_service_tools` 메서드에 도구 목록 추가:
+   ```python
+   elif service_name == "new_service_name":
+       return ["some_tool_method", "another_tool_method"]
+   ```
+
+2. `_handle_list_tools` 메서드에 도구 정의 추가:
+   ```python
+   # 새 서비스 도구
+   if "new_service_name" in self.services:
+       tools.extend([
+           {
+               "name": "some_tool_method",
+               "description": "도구에 대한 설명",
+               "inputSchema": {
+                   "type": "object",
+                   "properties": {
+                       "arg1": {
+                           "type": "string",
+                           "description": "매개변수 설명"
+                       }
+                   },
+                   "required": ["arg1"]
+               }
+           }
+       ])
+   ```
+
+3. `_handle_call_tool` 메서드에 도구 호출 처리 로직 추가:
+   ```python
+   elif service_name == "new_service_name":
+       if tool_name == "some_tool_method":
+           result = service.some_tool_method(args.get("arg1"))
+           formatted_result = service.format_result(result)
+           return {"content": [{"type": "text", "text": formatted_result}]}
+   ```
+
+### 4. 환경 변수 설정 (필요한 경우)
+서비스에 외부 API 키 등이 필요한 경우 환경 변수를 설정합니다:
+
+```bash
+export NEW_SERVICE_API_KEY="your-api-key-here"
+```
+
+## CDK 배포 방법
 
 1. 프로젝트 클론:
    ```bash
@@ -205,12 +328,18 @@ flowchart LR
 
 ## 프로젝트 구조
 
+### 핵심 파일
 - `app.py`: 메인 Streamlit 애플리케이션
-- `google_search_mcp_server.py`: Google 검색 API 기능 구현
-- `google_search_mcp_client.py`: Google 검색 클라이언트
-- `google_search_mcp.py`: 검색 MCP 구현
-- `datetime_mcp_server.py`: 날짜/시간 정보 서버 구현
-- `datetime_mcp_client.py`: 날짜/시간 정보 클라이언트
+
+### 통합 MCP 파일
+- `mcp.py`: 통합 MCP 서버 구현 (모든 서비스 관리)
+- `mcp_client.py`: 통합 MCP 클라이언트 인터페이스
+- `mcp_config.json`: MCP 서비스 구성 정의 파일
+
+### 서비스 구현 파일
+- `datetime_mcp_server.py`: 날짜/시간 정보 서비스 구현
+- `google_search_mcp_server.py`: Google 검색 서비스 구현
+
 
 ## 사용 방법
 

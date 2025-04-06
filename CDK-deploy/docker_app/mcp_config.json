@@ -1,0 +1,20 @@
+{
+  "services": [
+    {
+      "name": "datetime",
+      "module": "datetime_mcp_server",
+      "class": "DatetimeServer",
+      "params": {
+        "timezone": "Asia/Seoul"
+      }
+    },
+    {
+      "name": "search",
+      "module": "google_search_mcp_server",
+      "class": "GoogleSearchServer",
+      "params": {
+        "max_results": 5
+      }
+    }
+  ]
+}

@@ -32,33 +32,48 @@ Model Context Protocol(MCP)의 호출 흐름은 다음과 같은 계층 구조�
 
 ```mermaid
 flowchart LR
-    HostApp[호스트 앱 - app.py] --> MCPClient[MCP 클라이언트 : XXX_mcp_client.py]
-    MCPClient --> MCPServer[MCP 서버 : XXX_mcp_server.py]
-    MCPServer --> ExternalAPI[외부 서비스/API]
+    HostApp[호스트 앱 - app.py] --> UnifiedClient[통합 MCP 클라이언트 - mcp_client.py]
+    UnifiedClient --> UnifiedServer[통합 MCP 서버 - mcp.py]
+    UnifiedServer --> Services[서비스 컨테이너]
+    Services --> DTService[날짜/시간 서비스]
+    Services --> SearchService[검색 서비스]
+    Services --> OtherService[기타 서비스...]
+    DTService --> ExternalAPI1[시스템 시간 API]
+    SearchService --> ExternalAPI2[Google Search API]
+    OtherService --> ExternalAPI3[기타 외부 API]
     
     %% 스타일 정의
     classDef host fill:#D4E6F1,stroke:#3498DB,stroke-width:2px,color:#000000;
     classDef client fill:#D5F5E3,stroke:#2ECC71,stroke-width:2px,color:#000000;
     classDef server fill:#FCF3CF,stroke:#F1C40F,stroke-width:2px,color:#000000;
+    classDef service fill:#E8DAEF,stroke:#8E44AD,stroke-width:2px,color:#000000;
     classDef external fill:#FADBD8,stroke:#E74C3C,stroke-width:2px,color:#000000;
     
     %% 스타일 적용
     class HostApp host;
-    class MCPClient client;
-    class MCPServer server;
-    class ExternalAPI external;
+    class UnifiedClient client;
+    class UnifiedServer server;
+    class Services,DTService,SearchService,OtherService service;
+    class ExternalAPI1,ExternalAPI2,ExternalAPI3 external;
 ```
 
+- **통합 MCP 구조**: 
+  - 단일 MCP 서버를 통해 여러 서비스 관리 (`mcp.py`)
+  - 통합 클라이언트로 일관된 인터페이스 제공 (`mcp_client.py`)
+  - 설정 파일을 통한 서비스 구성 (`mcp_config.json`)
+  
 - **통신 방식**: 
   - stdio 기반 통신 (`StdioServerTransport` 클래스 활용)
   - Python asyncio를 활용한 비동기 구현
-- **파일 구성 패턴**:
-  - `XXX_mcp.py`: MCP 서버 진입점, MCP SDK 구현
-  - `XXX_mcp_server.py`: 실제 기능 구현 클래스
-  - `XXX_mcp_client.py`: 호스트 앱에서 사용하는 클라이언트 인터페이스
 
-#### 구현된 MCP 서버
-1. **Datetime MCP 서버**
+- **파일 구조**:
+  - `mcp.py`: 통합 MCP 서버, 여러 서비스 관리 및 도구 요청 라우팅
+  - `mcp_client.py`: 호스트 앱에서 사용하는 통합 클라이언트 인터페이스
+  - `mcp_config.json`: 서비스 구성 정의 (서비스 이름, 모듈, 클래스, 파라미터)
+  - `XXX_mcp_server.py`: 개별 서비스 구현 클래스 (datetime, search 등)
+
+#### 구현된 MCP 서비스
+1. **Datetime 서비스**
    - **기능**: 현재 날짜/시간 정보 제공
    - **주요 도구**:
      - `get_current_time`: 현재 시간 정보 반환 (시, 분, 초, 오전/오후 등)
@@ -66,13 +81,69 @@ flowchart LR
      - `get_datetime_info`: 종합적인 날짜/시간 정보 제공 (시간대, 경과 시간, 남은 시간 등)
    - **특징**: 한국어 날짜/시간 표기, 시간대 설정(기본: Asia/Seoul), 시간 간격 계산
 
-2. **Google Search MCP 서버**
+2. **Google Search 서비스**
    - **기능**: Google Custom Search API를 통한 실시간 웹 검색 결과 제공
    - **주요 기능**:
      - 검색 쿼리 처리 및 결과 반환 (제목, 내용, URL)
      - 텍스트에서 중요 키워드 자동 추출
      - 검색 결과 포맷팅 및 정리
    - **특징**: 최대 결과 개수 조정 가능, 불용어 제거, 빈도 기반 키워드 추출, Google 검색 결과
+
+#### 새로운 MCP 서비스 추가 가이드
+
+아래 가이드를 따라 새로운 MCP 서비스를 추가할 수 있습니다:
+
+1. **서비스 구현**: `XXX_mcp_server.py` 파일 생성
+   ```python
+   class NewService:
+       def __init__(self, param1="default", param2="default"):
+           self.param1 = param1
+           self.param2 = param2
+       
+       def some_tool_method(self, arg1, arg2=None):
+           # 도구 구현
+           return {"result": "..."}
+       
+       def format_result(self, result):
+           # 결과 포맷팅
+           return "포맷된 결과..."
+   ```
+
+2. **설정 파일 수정**: `mcp_config.json` 파일에 서비스 정의 추가
+   ```json
+   {
+     "services": [
+       ...,
+       {
+         "name": "new_service_name",
+         "module": "new_service_mcp_server",
+         "class": "NewService", 
+         "params": {
+           "param1": "value1",
+           "param2": "value2"
+         }
+       }
+     ]
+   }
+   ```
+
+3. **서버 도구 핸들러 확장** (선택적): 새 서비스의 도구가 특수한 처리가 필요한 경우 `mcp.py`의 다음 메서드 수정
+   - `_get_service_tools`: 서비스가 제공하는 도구 목록 정의
+   - `_handle_list_tools`: 도구 메타데이터 정의
+   - `_handle_call_tool`: 도구 호출 처리 로직
+
+4. **클래스 이름 규칙**:
+   - 클래스 이름이 mcp_config.json의 "class" 필드와 정확히 일치해야 함
+   - 호환성을 위해 필요한 경우 별칭 사용 가능:
+     ```python
+     class ActualClassName:
+         # 구현...
+     
+     # 설정 파일의 클래스 이름과 일치하는 별칭
+     ConfigClassName = ActualClassName
+     ```
+
+5. **환경 변수 및 인증**: 필요한 API 키나 인증 정보를 환경 변수로 관리
 
 #### MCP 활용 예시
 - **실시간 정보 질의**: "지금 몇 시야?", "오늘 날짜가 어떻게 돼?" 등의 질문에 현재 시간 정보 제공

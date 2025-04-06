@@ -137,8 +137,8 @@ class DatetimeMCPServer:
             remaining_seconds = (end_of_day - now).total_seconds()
             
             # 올해 지난 일수와 남은 일수
-            start_of_year = datetime.datetime(now.year, 1, 1, tzinfo=tz)
-            end_of_year = datetime.datetime(now.year + 1, 1, 1, tzinfo=tz)
+            start_of_year = tz.localize(datetime.datetime(now.year, 1, 1))
+            end_of_year = tz.localize(datetime.datetime(now.year + 1, 1, 1))
             elapsed_days = (now - start_of_year).days
             remaining_days = (end_of_year - now).days
             
@@ -305,6 +305,9 @@ def main():
         dt_info = server.get_datetime_info()
         print(server.format_datetime_info(dt_info))
 
+
+# 통합 MCP 구조와의 호환성을 위한 별칭
+DatetimeServer = DatetimeMCPServer
 
 if __name__ == "__main__":
     main()

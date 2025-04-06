@@ -19,14 +19,13 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import boto3
 
 # MCP 기능 임포트
-from google_search_mcp_client import GoogleSearchMCPClient
-from datetime_mcp_client import DatetimeMCPClient
 import re
 import json
+from mcp_client import UnifiedMCPClient
 
-# MCP 클라이언트 초기화
-search_client = GoogleSearchMCPClient()
-extract_keywords = search_client.extract_keywords
+# 통합 MCP 클라이언트 초기화
+mcp_client = UnifiedMCPClient()
+extract_keywords = mcp_client.extract_keywords
 
 # 질의 의도 타입
 class QueryIntent:
@@ -442,9 +441,8 @@ def generate_response(
                 if datetime_needed:
                     try:
                         st.info("⏰ 날짜/시간 정보를 조회합니다")
-                        dt_client = DatetimeMCPClient()
-                        dt_info = dt_client.get_datetime_info()
-                        datetime_info_text = dt_client.format_datetime_info(dt_info)
+                        dt_info = mcp_client.get_datetime_info()
+                        datetime_info_text = mcp_client.format_datetime_info(dt_info)
                         st.success("현재 날짜/시간 정보 조회 완료")
                         
                         # 결과 표시
@@ -461,10 +459,10 @@ def generate_response(
                     
                     if search_query:
                         st.info(f"🔍 Google에서 '{search_query}'에 대한 정보 검색 중")
-                        search_results = search_client.search(search_query)
+                        search_results = mcp_client.search(search_query)
                         
                         if search_results:
-                            search_results_text = search_client.format_results(search_results)
+                            search_results_text = mcp_client.format_results(search_results)
                             st.success(f"'{search_query}' 검색 결과 {len(search_results)}건 발견")
                             
                             # 검색 결과 표시
@@ -871,23 +869,21 @@ def process_mcp_services(input_text: str) -> tuple[str, str]:
     # 의도에 따른 서비스 호출
     if intent == QueryIntent.DATETIME or intent == QueryIntent.MIXED:
         try:
-            # 날짜/시간 MCP 클라이언트 사용
-            dt_client = DatetimeMCPClient()
-            
+            # 통합 MCP 클라이언트 사용
             if subtype == "time":
                 # 시간 정보 요청
-                time_info = dt_client.get_current_time()
-                datetime_info_text = dt_client.format_time(time_info)
+                time_info = mcp_client.get_current_time()
+                datetime_info_text = mcp_client.format_time(time_info)
                 st.success("시간 정보 조회 완료")
             elif subtype == "date":
                 # 날짜 정보 요청
-                date_info = dt_client.get_current_date()
-                datetime_info_text = dt_client.format_date(date_info)
+                date_info = mcp_client.get_current_date()
+                datetime_info_text = mcp_client.format_date(date_info)
                 st.success("날짜 정보 조회 완료")
             else:  # "datetime"
                 # 종합 정보 요청
-                dt_info = dt_client.get_datetime_info()
-                datetime_info_text = dt_client.format_datetime_info(dt_info)
+                dt_info = mcp_client.get_datetime_info()
+                datetime_info_text = mcp_client.format_datetime_info(dt_info)
                 st.success("날짜 및 시간 정보 조회 완료")
             
             # 결과 표시
@@ -906,11 +902,11 @@ def process_mcp_services(input_text: str) -> tuple[str, str]:
             if search_query:
                 st.info(f"Google에서 '{search_query}'에 대한 정보를 검색 중입니다...")
                 
-                # Google MCP 클라이언트를 통한 검색 수행
-                search_results = search_client.search(search_query)
+                # 통합 MCP 클라이언트를 통한 검색 수행
+                search_results = mcp_client.search(search_query)
                 
                 # 검색 결과 포맷팅
-                search_results_text = search_client.format_results(search_results)
+                search_results_text = mcp_client.format_results(search_results)
                 
                 if search_results:
                     st.success(f"'{search_query}' 관련 검색 완료")

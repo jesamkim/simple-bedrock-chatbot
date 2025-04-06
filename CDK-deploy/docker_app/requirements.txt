@@ -1,9 +1,9 @@
-streamlit==1.32.0
+streamlit
 boto3
 python-dotenv
-langchain==0.1.16
-langchain-aws==0.1.2
-langchain-community==0.0.34
+langchain
+langchain-aws
+langchain-community
 langchain-core
 requests
 beautifulsoup4
