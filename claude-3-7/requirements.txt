@@ -9,3 +9,9 @@ requests
 beautifulsoup4
 nltk
 pytz
+openpyxl
+pandas
+PyPDF2
+python-docx
+python-pptx
+pydantic
