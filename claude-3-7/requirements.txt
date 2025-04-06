@@ -15,5 +15,4 @@ PyPDF2
 python-docx
 python-pptx
 pydantic
-mcp
 modelcontextprotocol
