@@ -227,3 +227,12 @@ flowchart LR
 문서 업로드 및 Q&A 챗봇 인터페이스:
 
 ![Chatbot Screenshot](../img/screenshot2.png)
+
+
+## 참조
+- [Streamlit CDK Fargate](https://github.com/tzaffi/streamlit-cdk-fargate.git)
+- [AWS Bedrock Workshop](https://github.com/aws-samples/build-scale-generative-ai-applications-with-amazon-bedrock-workshop/)
+- [kyopark2014/mcp](https://github.com/kyopark2014/mcp)
+
+## 라이선스
+이 애플리케이션은 MIT-0 라이선스를 따릅니다. LICENSE 파일을 참조하세요.
