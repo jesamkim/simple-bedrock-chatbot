@@ -216,13 +216,13 @@ streamlit run app.py --server.port 8080
 aws configure
 
 # 또는 AWS 환경 변수 설정 (AWS 부분은 앞서 aws configure 로 했으면 생략)
-export AWS_ACCESS_KEY_ID=your_access_key
-export AWS_SECRET_ACCESS_KEY=your_secret_key
+export AWS_ACCESS_KEY_ID="your_access_key"
+export AWS_SECRET_ACCESS_KEY="your_secret_key"
 export AWS_DEFAULT_REGION=us-west-2
 
 # Google API Key 및 Engine ID 는 발급받아서 환경변수로 등록 필요
-export GOOGLE_API_KEY=your-api-key-here
-export GOOGLE_SEARCH_ENGINE_ID=your-search-engine-id-here
+export GOOGLE_API_KEY="your-api-key-here"
+export GOOGLE_SEARCH_ENGINE_ID="your-search-engine-id-here"
 ```
 
 ## 오류 처리
