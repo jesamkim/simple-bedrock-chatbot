@@ -66,7 +66,7 @@ Model Context Protocol(MCP)의 호출 흐름은 다음과 같은 계층 구조�
 
 1. 프로젝트 클론:
    ```bash
-   git clone https://github.com/사용자명/simple-bedrock-chatbot.git
+   git clone https://github.com/jesamkim/simple-bedrock-chatbot.git
    cd simple-bedrock-chatbot
    ```
 
