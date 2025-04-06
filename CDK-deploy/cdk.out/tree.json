@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "cdk-claude37": {
-        "id": "cdk-claude37",
-        "path": "cdk-claude37",
+      "claude37-mcp": {
+        "id": "claude37-mcp",
+        "path": "claude37-mcp",
         "children": {
-          "cdk-claude37AppVpc": {
-            "id": "cdk-claude37AppVpc",
-            "path": "cdk-claude37/cdk-claude37AppVpc",
+          "claude37-mcpAppVpc": {
+            "id": "claude37-mcpAppVpc",
+            "path": "claude37-mcp/claude37-mcpAppVpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-claude37/cdk-claude37AppVpc/Resource",
+                "path": "claude37-mcp/claude37-mcpAppVpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "cdk-claude37-stl-vpc"
+                        "value": "claude37-mcp-stl-vpc"
                       }
                     ]
                   }
@@ -37,11 +37,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet1",
+                "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet1/Subnet",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -66,11 +66,11 @@
                           },
                           {
                             "key": "Name",
-                            "value": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet1"
+                            "value": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "cdkclaude37AppVpcC9235425"
+                          "Ref": "claude37mcpAppVpc2EB32763"
                         }
                       }
                     },
@@ -81,7 +81,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet1/Acl",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.181.1",
@@ -90,18 +90,18 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet1/RouteTable",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet1"
+                            "value": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "cdkclaude37AppVpcC9235425"
+                          "Ref": "claude37mcpAppVpc2EB32763"
                         }
                       }
                     },
@@ -112,15 +112,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "cdkclaude37AppVpcPublicSubnet1RouteTable8AB87C99"
+                          "Ref": "claude37mcpAppVpcPublicSubnet1RouteTable6368330D"
                         },
                         "subnetId": {
-                          "Ref": "cdkclaude37AppVpcPublicSubnet1Subnet1557B3BE"
+                          "Ref": "claude37mcpAppVpcPublicSubnet1SubnetC664CCD3"
                         }
                       }
                     },
@@ -131,16 +131,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet1/DefaultRoute",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
-                          "Ref": "cdkclaude37AppVpcIGWC6FE7350"
+                          "Ref": "claude37mcpAppVpcIGW6D8CB256"
                         },
                         "routeTableId": {
-                          "Ref": "cdkclaude37AppVpcPublicSubnet1RouteTable8AB87C99"
+                          "Ref": "claude37mcpAppVpcPublicSubnet1RouteTable6368330D"
                         }
                       }
                     },
@@ -151,7 +151,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet1/EIP",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -159,7 +159,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet1"
+                            "value": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -171,23 +171,23 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet1/NATGateway",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
                         "allocationId": {
                           "Fn::GetAtt": [
-                            "cdkclaude37AppVpcPublicSubnet1EIPB47D80E7",
+                            "claude37mcpAppVpcPublicSubnet1EIP47E36338",
                             "AllocationId"
                           ]
                         },
                         "subnetId": {
-                          "Ref": "cdkclaude37AppVpcPublicSubnet1Subnet1557B3BE"
+                          "Ref": "claude37mcpAppVpcPublicSubnet1SubnetC664CCD3"
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet1"
+                            "value": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -206,11 +206,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet2",
+                "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet2/Subnet",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -235,11 +235,11 @@
                           },
                           {
                             "key": "Name",
-                            "value": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet2"
+                            "value": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "cdkclaude37AppVpcC9235425"
+                          "Ref": "claude37mcpAppVpc2EB32763"
                         }
                       }
                     },
@@ -250,7 +250,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet2/Acl",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.181.1",
@@ -259,18 +259,18 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet2/RouteTable",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet2"
+                            "value": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "cdkclaude37AppVpcC9235425"
+                          "Ref": "claude37mcpAppVpc2EB32763"
                         }
                       }
                     },
@@ -281,15 +281,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "cdkclaude37AppVpcPublicSubnet2RouteTable2699AC71"
+                          "Ref": "claude37mcpAppVpcPublicSubnet2RouteTable3F07DF6F"
                         },
                         "subnetId": {
-                          "Ref": "cdkclaude37AppVpcPublicSubnet2SubnetA29EFCCA"
+                          "Ref": "claude37mcpAppVpcPublicSubnet2Subnet0C6D74DE"
                         }
                       }
                     },
@@ -300,16 +300,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PublicSubnet2/DefaultRoute",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
-                          "Ref": "cdkclaude37AppVpcIGWC6FE7350"
+                          "Ref": "claude37mcpAppVpcIGW6D8CB256"
                         },
                         "routeTableId": {
-                          "Ref": "cdkclaude37AppVpcPublicSubnet2RouteTable2699AC71"
+                          "Ref": "claude37mcpAppVpcPublicSubnet2RouteTable3F07DF6F"
                         }
                       }
                     },
@@ -327,11 +327,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet1",
+                "path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet1/Subnet",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -356,11 +356,11 @@
                           },
                           {
                             "key": "Name",
-                            "value": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet1"
+                            "value": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "cdkclaude37AppVpcC9235425"
+                          "Ref": "claude37mcpAppVpc2EB32763"
                         }
                       }
                     },
@@ -371,7 +371,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet1/Acl",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.181.1",
@@ -380,18 +380,18 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet1/RouteTable",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet1"
+                            "value": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "cdkclaude37AppVpcC9235425"
+                          "Ref": "claude37mcpAppVpc2EB32763"
                         }
                       }
                     },
@@ -402,15 +402,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "cdkclaude37AppVpcPrivateSubnet1RouteTableF8705395"
+                          "Ref": "claude37mcpAppVpcPrivateSubnet1RouteTable0C57C5F2"
                         },
                         "subnetId": {
-                          "Ref": "cdkclaude37AppVpcPrivateSubnet1SubnetC400800E"
+                          "Ref": "claude37mcpAppVpcPrivateSubnet1Subnet6C9FFEA9"
                         }
                       }
                     },
@@ -421,16 +421,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet1/DefaultRoute",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
-                          "Ref": "cdkclaude37AppVpcPublicSubnet1NATGateway700B6966"
+                          "Ref": "claude37mcpAppVpcPublicSubnet1NATGatewayEB144A1C"
                         },
                         "routeTableId": {
-                          "Ref": "cdkclaude37AppVpcPrivateSubnet1RouteTableF8705395"
+                          "Ref": "claude37mcpAppVpcPrivateSubnet1RouteTable0C57C5F2"
                         }
                       }
                     },
@@ -448,11 +448,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet2",
+                "path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet2/Subnet",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -477,11 +477,11 @@
                           },
                           {
                             "key": "Name",
-                            "value": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet2"
+                            "value": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "cdkclaude37AppVpcC9235425"
+                          "Ref": "claude37mcpAppVpc2EB32763"
                         }
                       }
                     },
@@ -492,7 +492,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet2/Acl",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.181.1",
@@ -501,18 +501,18 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet2/RouteTable",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet2"
+                            "value": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "cdkclaude37AppVpcC9235425"
+                          "Ref": "claude37mcpAppVpc2EB32763"
                         }
                       }
                     },
@@ -523,15 +523,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "cdkclaude37AppVpcPrivateSubnet2RouteTableD369BECF"
+                          "Ref": "claude37mcpAppVpcPrivateSubnet2RouteTable55177453"
                         },
                         "subnetId": {
-                          "Ref": "cdkclaude37AppVpcPrivateSubnet2Subnet97E0DEA4"
+                          "Ref": "claude37mcpAppVpcPrivateSubnet2SubnetBBA1C5B5"
                         }
                       }
                     },
@@ -542,16 +542,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/PrivateSubnet2/DefaultRoute",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
-                          "Ref": "cdkclaude37AppVpcPublicSubnet1NATGateway700B6966"
+                          "Ref": "claude37mcpAppVpcPublicSubnet1NATGatewayEB144A1C"
                         },
                         "routeTableId": {
-                          "Ref": "cdkclaude37AppVpcPrivateSubnet2RouteTableD369BECF"
+                          "Ref": "claude37mcpAppVpcPrivateSubnet2RouteTable55177453"
                         }
                       }
                     },
@@ -569,14 +569,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "cdk-claude37/cdk-claude37AppVpc/IGW",
+                "path": "claude37-mcp/claude37-mcpAppVpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "cdk-claude37-stl-vpc"
+                        "value": "claude37-mcp-stl-vpc"
                       }
                     ]
                   }
@@ -588,15 +588,15 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "cdk-claude37/cdk-claude37AppVpc/VPCGW",
+                "path": "claude37-mcp/claude37-mcpAppVpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
                     "internetGatewayId": {
-                      "Ref": "cdkclaude37AppVpcIGWC6FE7350"
+                      "Ref": "claude37mcpAppVpcIGW6D8CB256"
                     },
                     "vpcId": {
-                      "Ref": "cdkclaude37AppVpcC9235425"
+                      "Ref": "claude37mcpAppVpc2EB32763"
                     }
                   }
                 },
@@ -607,11 +607,11 @@
               },
               "RestrictDefaultSecurityGroupCustomResource": {
                 "id": "RestrictDefaultSecurityGroupCustomResource",
-                "path": "cdk-claude37/cdk-claude37AppVpc/RestrictDefaultSecurityGroupCustomResource",
+                "path": "claude37-mcp/claude37-mcpAppVpc/RestrictDefaultSecurityGroupCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "cdk-claude37/cdk-claude37AppVpc/RestrictDefaultSecurityGroupCustomResource/Default",
+                    "path": "claude37-mcp/claude37-mcpAppVpc/RestrictDefaultSecurityGroupCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "2.181.1"
@@ -633,11 +633,11 @@
           },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
-            "path": "cdk-claude37/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "claude37-mcp/Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "cdk-claude37/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "path": "claude37-mcp/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "2.181.1"
@@ -645,7 +645,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "cdk-claude37/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "path": "claude37-mcp/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "2.181.1"
@@ -653,7 +653,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "cdk-claude37/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "path": "claude37-mcp/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "2.181.1"
@@ -665,18 +665,18 @@
               "version": "2.181.1"
             }
           },
-          "cdk-claude37SecurityGroupECS": {
-            "id": "cdk-claude37SecurityGroupECS",
-            "path": "cdk-claude37/cdk-claude37SecurityGroupECS",
+          "claude37-mcpSecurityGroupECS": {
+            "id": "claude37-mcpSecurityGroupECS",
+            "path": "claude37-mcp/claude37-mcpSecurityGroupECS",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-claude37/cdk-claude37SecurityGroupECS/Resource",
+                "path": "claude37-mcp/claude37-mcpSecurityGroupECS/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                   "aws:cdk:cloudformation:props": {
-                    "groupDescription": "cdk-claude37/cdk-claude37SecurityGroupECS",
-                    "groupName": "cdk-claude37-stl-ecs-sg",
+                    "groupDescription": "claude37-mcp/claude37-mcpSecurityGroupECS",
+                    "groupName": "claude37-mcp-stl-ecs-sg",
                     "securityGroupEgress": [
                       {
                         "cidrIp": "0.0.0.0/0",
@@ -685,7 +685,7 @@
                       }
                     ],
                     "vpcId": {
-                      "Ref": "cdkclaude37AppVpcC9235425"
+                      "Ref": "claude37mcpAppVpc2EB32763"
                     }
                   }
                 },
@@ -694,9 +694,9 @@
                   "version": "2.181.1"
                 }
               },
-              "from cdkclaude37cdkclaude37SecurityGroupALBA105F7D7:8501": {
-                "id": "from cdkclaude37cdkclaude37SecurityGroupALBA105F7D7:8501",
-                "path": "cdk-claude37/cdk-claude37SecurityGroupECS/from cdkclaude37cdkclaude37SecurityGroupALBA105F7D7:8501",
+              "from claude37mcpclaude37mcpSecurityGroupALB880AE551:8501": {
+                "id": "from claude37mcpclaude37mcpSecurityGroupALB880AE551:8501",
+                "path": "claude37-mcp/claude37-mcpSecurityGroupECS/from claude37mcpclaude37mcpSecurityGroupALB880AE551:8501",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                   "aws:cdk:cloudformation:props": {
@@ -704,14 +704,14 @@
                     "fromPort": 8501,
                     "groupId": {
                       "Fn::GetAtt": [
-                        "cdkclaude37SecurityGroupECS28A1ED9E",
+                        "claude37mcpSecurityGroupECS8E7E44AC",
                         "GroupId"
                       ]
                     },
                     "ipProtocol": "tcp",
                     "sourceSecurityGroupId": {
                       "Fn::GetAtt": [
-                        "cdkclaude37SecurityGroupALB9BEA01F6",
+                        "claude37mcpSecurityGroupALBC5607C78",
                         "GroupId"
                       ]
                     },
@@ -730,18 +730,18 @@
               "metadata": []
             }
           },
-          "cdk-claude37SecurityGroupALB": {
-            "id": "cdk-claude37SecurityGroupALB",
-            "path": "cdk-claude37/cdk-claude37SecurityGroupALB",
+          "claude37-mcpSecurityGroupALB": {
+            "id": "claude37-mcpSecurityGroupALB",
+            "path": "claude37-mcp/claude37-mcpSecurityGroupALB",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-claude37/cdk-claude37SecurityGroupALB/Resource",
+                "path": "claude37-mcp/claude37-mcpSecurityGroupALB/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                   "aws:cdk:cloudformation:props": {
-                    "groupDescription": "cdk-claude37/cdk-claude37SecurityGroupALB",
-                    "groupName": "cdk-claude37-stl-alb-sg",
+                    "groupDescription": "claude37-mcp/claude37-mcpSecurityGroupALB",
+                    "groupName": "claude37-mcp-stl-alb-sg",
                     "securityGroupEgress": [
                       {
                         "cidrIp": "0.0.0.0/0",
@@ -759,7 +759,7 @@
                       }
                     ],
                     "vpcId": {
-                      "Ref": "cdkclaude37AppVpcC9235425"
+                      "Ref": "claude37mcpAppVpc2EB32763"
                     }
                   }
                 },
@@ -775,13 +775,13 @@
               "metadata": []
             }
           },
-          "cdk-claude37Cluster": {
-            "id": "cdk-claude37Cluster",
-            "path": "cdk-claude37/cdk-claude37Cluster",
+          "claude37-mcpCluster": {
+            "id": "claude37-mcpCluster",
+            "path": "claude37-mcp/claude37-mcpCluster",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-claude37/cdk-claude37Cluster/Resource",
+                "path": "claude37-mcp/claude37-mcpCluster/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
                   "aws:cdk:cloudformation:props": {}
@@ -791,9 +791,9 @@
                   "version": "2.181.1"
                 }
               },
-              "cdk-claude37Cluster": {
-                "id": "cdk-claude37Cluster",
-                "path": "cdk-claude37/cdk-claude37Cluster/cdk-claude37Cluster",
+              "claude37-mcpCluster": {
+                "id": "claude37-mcpCluster",
+                "path": "claude37-mcp/claude37-mcpCluster/claude37-mcpCluster",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::ClusterCapacityProviderAssociations",
                   "aws:cdk:cloudformation:props": {
@@ -802,7 +802,7 @@
                       "FARGATE_SPOT"
                     ],
                     "cluster": {
-                      "Ref": "cdkclaude37Cluster4C081596"
+                      "Ref": "claude37mcpClusterED3556E5"
                     },
                     "defaultCapacityProviderStrategy": []
                   }
@@ -819,13 +819,13 @@
               "metadata": []
             }
           },
-          "cdk-claude37Alb": {
-            "id": "cdk-claude37Alb",
-            "path": "cdk-claude37/cdk-claude37Alb",
+          "claude37-mcpAlb": {
+            "id": "claude37-mcpAlb",
+            "path": "claude37-mcp/claude37-mcpAlb",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-claude37/cdk-claude37Alb/Resource",
+                "path": "claude37-mcp/claude37-mcpAlb/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
                   "aws:cdk:cloudformation:props": {
@@ -835,22 +835,22 @@
                         "value": "false"
                       }
                     ],
-                    "name": "cdk-claude37-stl",
+                    "name": "claude37-mcp-stl",
                     "scheme": "internet-facing",
                     "securityGroups": [
                       {
                         "Fn::GetAtt": [
-                          "cdkclaude37SecurityGroupALB9BEA01F6",
+                          "claude37mcpSecurityGroupALBC5607C78",
                           "GroupId"
                         ]
                       }
                     ],
                     "subnets": [
                       {
-                        "Ref": "cdkclaude37AppVpcPublicSubnet1Subnet1557B3BE"
+                        "Ref": "claude37mcpAppVpcPublicSubnet1SubnetC664CCD3"
                       },
                       {
-                        "Ref": "cdkclaude37AppVpcPublicSubnet2SubnetA29EFCCA"
+                        "Ref": "claude37mcpAppVpcPublicSubnet2Subnet0C6D74DE"
                       }
                     ],
                     "type": "application"
@@ -861,13 +861,13 @@
                   "version": "2.181.1"
                 }
               },
-              "cdk-claude37HttpListener": {
-                "id": "cdk-claude37HttpListener",
-                "path": "cdk-claude37/cdk-claude37Alb/cdk-claude37HttpListener",
+              "claude37-mcpHttpListener": {
+                "id": "claude37-mcpHttpListener",
+                "path": "claude37-mcp/claude37-mcpAlb/claude37-mcpHttpListener",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cdk-claude37/cdk-claude37Alb/cdk-claude37HttpListener/Resource",
+                    "path": "claude37-mcp/claude37-mcpAlb/claude37-mcpHttpListener/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
                       "aws:cdk:cloudformation:props": {
@@ -882,7 +882,7 @@
                           }
                         ],
                         "loadBalancerArn": {
-                          "Ref": "cdkclaude37Alb11D6988B"
+                          "Ref": "claude37mcpAlb6DC637E4"
                         },
                         "port": 80,
                         "protocol": "HTTP"
@@ -893,17 +893,17 @@
                       "version": "2.181.1"
                     }
                   },
-                  "cdk-claude37TargetGroupGroup": {
-                    "id": "cdk-claude37TargetGroupGroup",
-                    "path": "cdk-claude37/cdk-claude37Alb/cdk-claude37HttpListener/cdk-claude37TargetGroupGroup",
+                  "claude37-mcpTargetGroupGroup": {
+                    "id": "claude37-mcpTargetGroupGroup",
+                    "path": "claude37-mcp/claude37-mcpAlb/claude37-mcpHttpListener/claude37-mcpTargetGroupGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "cdk-claude37/cdk-claude37Alb/cdk-claude37HttpListener/cdk-claude37TargetGroupGroup/Resource",
+                        "path": "claude37-mcp/claude37-mcpAlb/claude37-mcpHttpListener/claude37-mcpTargetGroupGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
                           "aws:cdk:cloudformation:props": {
-                            "name": "cdk-claude37-tg",
+                            "name": "claude37-mcp-tg",
                             "port": 8501,
                             "protocol": "HTTP",
                             "targetGroupAttributes": [
@@ -914,7 +914,7 @@
                             ],
                             "targetType": "ip",
                             "vpcId": {
-                              "Ref": "cdkclaude37AppVpcC9235425"
+                              "Ref": "claude37mcpAppVpc2EB32763"
                             }
                           }
                         },
@@ -929,13 +929,13 @@
                       "version": "2.181.1"
                     }
                   },
-                  "cdk-claude37TargetGroupRule": {
-                    "id": "cdk-claude37TargetGroupRule",
-                    "path": "cdk-claude37/cdk-claude37Alb/cdk-claude37HttpListener/cdk-claude37TargetGroupRule",
+                  "claude37-mcpTargetGroupRule": {
+                    "id": "claude37-mcpTargetGroupRule",
+                    "path": "claude37-mcp/claude37-mcpAlb/claude37-mcpHttpListener/claude37-mcpTargetGroupRule",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "cdk-claude37/cdk-claude37Alb/cdk-claude37HttpListener/cdk-claude37TargetGroupRule/Resource",
+                        "path": "claude37-mcp/claude37-mcpAlb/claude37-mcpHttpListener/claude37-mcpTargetGroupRule/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::ListenerRule",
                           "aws:cdk:cloudformation:props": {
@@ -943,7 +943,7 @@
                               {
                                 "type": "forward",
                                 "targetGroupArn": {
-                                  "Ref": "cdkclaude37Albcdkclaude37HttpListenercdkclaude37TargetGroupGroupFED4A94B"
+                                  "Ref": "claude37mcpAlbclaude37mcpHttpListenerclaude37mcpTargetGroupGroup0B4552CD"
                                 }
                               }
                             ],
@@ -953,13 +953,13 @@
                                 "httpHeaderConfig": {
                                   "httpHeaderName": "X-Custom-Header",
                                   "values": [
-                                    "My_random_value_37asv15e4s38"
+                                    "My_random_value_77mcp15e4s38"
                                   ]
                                 }
                               }
                             ],
                             "listenerArn": {
-                              "Ref": "cdkclaude37Albcdkclaude37HttpListener2F9594D0"
+                              "Ref": "claude37mcpAlbclaude37mcpHttpListenerD0050E83"
                             },
                             "priority": 1
                           }
@@ -989,17 +989,17 @@
               "metadata": []
             }
           },
-          "cdk-claude37WebappTaskDef": {
-            "id": "cdk-claude37WebappTaskDef",
-            "path": "cdk-claude37/cdk-claude37WebappTaskDef",
+          "claude37-mcpWebappTaskDef": {
+            "id": "claude37-mcpWebappTaskDef",
+            "path": "claude37-mcp/claude37-mcpWebappTaskDef",
             "children": {
               "TaskRole": {
                 "id": "TaskRole",
-                "path": "cdk-claude37/cdk-claude37WebappTaskDef/TaskRole",
+                "path": "claude37-mcp/claude37-mcpWebappTaskDef/TaskRole",
                 "children": {
                   "ImportTaskRole": {
                     "id": "ImportTaskRole",
-                    "path": "cdk-claude37/cdk-claude37WebappTaskDef/TaskRole/ImportTaskRole",
+                    "path": "claude37-mcp/claude37-mcpWebappTaskDef/TaskRole/ImportTaskRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.181.1",
@@ -1008,7 +1008,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "cdk-claude37/cdk-claude37WebappTaskDef/TaskRole/Resource",
+                    "path": "claude37-mcp/claude37-mcpWebappTaskDef/TaskRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1054,7 +1054,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-claude37/cdk-claude37WebappTaskDef/Resource",
+                "path": "claude37-mcp/claude37-mcpWebappTaskDef/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
                   "aws:cdk:cloudformation:props": {
@@ -1062,9 +1062,9 @@
                       {
                         "essential": true,
                         "image": {
-                          "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:653d45d14f778f9dadaa0df07b1a3767b7a1f141c161c6c4e6a102ab18ca92c2"
+                          "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:c307f8a99d16b3aa248f121786d5b3613c7c0fb3ecf03ae3e2d4cbabed677a3c"
                         },
-                        "name": "cdk-claude37WebContainer",
+                        "name": "claude37-mcpWebContainer",
                         "portMappings": [
                           {
                             "containerPort": 8501,
@@ -1075,24 +1075,40 @@
                           "logDriver": "awslogs",
                           "options": {
                             "awslogs-group": {
-                              "Ref": "cdkclaude37WebappTaskDefcdkclaude37WebContainerLogGroup42FE51CE"
+                              "Ref": "claude37mcpWebappTaskDefclaude37mcpWebContainerLogGroup9856E31B"
                             },
                             "awslogs-stream-prefix": "WebContainerLogs",
                             "awslogs-region": {
                               "Ref": "AWS::Region"
                             }
                           }
-                        }
+                        },
+                        "environment": [
+                          {
+                            "name": "AWS_REGION",
+                            "value": {
+                              "Ref": "AWS::Region"
+                            }
+                          },
+                          {
+                            "name": "GOOGLE_API_KEY",
+                            "value": "AIzaSyCHEKHvxl4DogV3gU6R_XyUAOhuPkBmWNI"
+                          },
+                          {
+                            "name": "GOOGLE_SEARCH_ENGINE_ID",
+                            "value": "63c5c04d0d4af48e7"
+                          }
+                        ]
                       }
                     ],
                     "cpu": "1024",
                     "executionRoleArn": {
                       "Fn::GetAtt": [
-                        "cdkclaude37WebappTaskDefExecutionRoleB7B48F10",
+                        "claude37mcpWebappTaskDefExecutionRoleCB46AA8D",
                         "Arn"
                       ]
                     },
-                    "family": "cdkclaude37cdkclaude37WebappTaskDef03A5DCB8",
+                    "family": "claude37mcpclaude37mcpWebappTaskDefDE3EFBFA",
                     "memory": "2048",
                     "networkMode": "awsvpc",
                     "requiresCompatibilities": [
@@ -1100,7 +1116,7 @@
                     ],
                     "taskRoleArn": {
                       "Fn::GetAtt": [
-                        "cdkclaude37WebappTaskDefTaskRoleF45C4E39",
+                        "claude37mcpWebappTaskDefTaskRole8C74D28F",
                         "Arn"
                       ]
                     }
@@ -1111,17 +1127,17 @@
                   "version": "2.181.1"
                 }
               },
-              "cdk-claude37WebContainer": {
-                "id": "cdk-claude37WebContainer",
-                "path": "cdk-claude37/cdk-claude37WebappTaskDef/cdk-claude37WebContainer",
+              "claude37-mcpWebContainer": {
+                "id": "claude37-mcpWebContainer",
+                "path": "claude37-mcp/claude37-mcpWebappTaskDef/claude37-mcpWebContainer",
                 "children": {
                   "AssetImage": {
                     "id": "AssetImage",
-                    "path": "cdk-claude37/cdk-claude37WebappTaskDef/cdk-claude37WebContainer/AssetImage",
+                    "path": "claude37-mcp/claude37-mcpWebappTaskDef/claude37-mcpWebContainer/AssetImage",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "cdk-claude37/cdk-claude37WebappTaskDef/cdk-claude37WebContainer/AssetImage/Staging",
+                        "path": "claude37-mcp/claude37-mcpWebappTaskDef/claude37-mcpWebContainer/AssetImage/Staging",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "2.181.1"
@@ -1129,7 +1145,7 @@
                       },
                       "Repository": {
                         "id": "Repository",
-                        "path": "cdk-claude37/cdk-claude37WebappTaskDef/cdk-claude37WebContainer/AssetImage/Repository",
+                        "path": "claude37-mcp/claude37-mcpWebappTaskDef/claude37-mcpWebContainer/AssetImage/Repository",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
                           "version": "2.181.1",
@@ -1144,11 +1160,11 @@
                   },
                   "LogGroup": {
                     "id": "LogGroup",
-                    "path": "cdk-claude37/cdk-claude37WebappTaskDef/cdk-claude37WebContainer/LogGroup",
+                    "path": "claude37-mcp/claude37-mcpWebappTaskDef/claude37-mcpWebContainer/LogGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "cdk-claude37/cdk-claude37WebappTaskDef/cdk-claude37WebContainer/LogGroup/Resource",
+                        "path": "claude37-mcp/claude37-mcpWebappTaskDef/claude37-mcpWebContainer/LogGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                           "aws:cdk:cloudformation:props": {}
@@ -1173,11 +1189,11 @@
               },
               "ExecutionRole": {
                 "id": "ExecutionRole",
-                "path": "cdk-claude37/cdk-claude37WebappTaskDef/ExecutionRole",
+                "path": "claude37-mcp/claude37-mcpWebappTaskDef/ExecutionRole",
                 "children": {
                   "ImportExecutionRole": {
                     "id": "ImportExecutionRole",
-                    "path": "cdk-claude37/cdk-claude37WebappTaskDef/ExecutionRole/ImportExecutionRole",
+                    "path": "claude37-mcp/claude37-mcpWebappTaskDef/ExecutionRole/ImportExecutionRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.181.1",
@@ -1186,7 +1202,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "cdk-claude37/cdk-claude37WebappTaskDef/ExecutionRole/Resource",
+                    "path": "claude37-mcp/claude37-mcpWebappTaskDef/ExecutionRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1211,11 +1227,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "cdk-claude37/cdk-claude37WebappTaskDef/ExecutionRole/DefaultPolicy",
+                    "path": "claude37-mcp/claude37-mcpWebappTaskDef/ExecutionRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "cdk-claude37/cdk-claude37WebappTaskDef/ExecutionRole/DefaultPolicy/Resource",
+                        "path": "claude37-mcp/claude37-mcpWebappTaskDef/ExecutionRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1265,7 +1281,7 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "cdkclaude37WebappTaskDefcdkclaude37WebContainerLogGroup42FE51CE",
+                                      "claude37mcpWebappTaskDefclaude37mcpWebContainerLogGroup9856E31B",
                                       "Arn"
                                     ]
                                   }
@@ -1273,10 +1289,10 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "cdkclaude37WebappTaskDefExecutionRoleDefaultPolicy75F1A89C",
+                            "policyName": "claude37mcpWebappTaskDefExecutionRoleDefaultPolicyC3F843CA",
                             "roles": [
                               {
-                                "Ref": "cdkclaude37WebappTaskDefExecutionRoleB7B48F10"
+                                "Ref": "claude37mcpWebappTaskDefExecutionRoleCB46AA8D"
                               }
                             ]
                           }
@@ -1307,18 +1323,18 @@
               "metadata": []
             }
           },
-          "cdk-claude37ECSService": {
-            "id": "cdk-claude37ECSService",
-            "path": "cdk-claude37/cdk-claude37ECSService",
+          "claude37-mcpECSService": {
+            "id": "claude37-mcpECSService",
+            "path": "claude37-mcp/claude37-mcpECSService",
             "children": {
               "Service": {
                 "id": "Service",
-                "path": "cdk-claude37/cdk-claude37ECSService/Service",
+                "path": "claude37-mcp/claude37-mcpECSService/Service",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::Service",
                   "aws:cdk:cloudformation:props": {
                     "cluster": {
-                      "Ref": "cdkclaude37Cluster4C081596"
+                      "Ref": "claude37mcpClusterED3556E5"
                     },
                     "deploymentConfiguration": {
                       "maximumPercent": 200,
@@ -1342,9 +1358,9 @@
                     "loadBalancers": [
                       {
                         "targetGroupArn": {
-                          "Ref": "cdkclaude37Albcdkclaude37HttpListenercdkclaude37TargetGroupGroupFED4A94B"
+                          "Ref": "claude37mcpAlbclaude37mcpHttpListenerclaude37mcpTargetGroupGroup0B4552CD"
                         },
-                        "containerName": "cdk-claude37WebContainer",
+                        "containerName": "claude37-mcpWebContainer",
                         "containerPort": 8501
                       }
                     ],
@@ -1353,25 +1369,25 @@
                         "assignPublicIp": "DISABLED",
                         "subnets": [
                           {
-                            "Ref": "cdkclaude37AppVpcPrivateSubnet1SubnetC400800E"
+                            "Ref": "claude37mcpAppVpcPrivateSubnet1Subnet6C9FFEA9"
                           },
                           {
-                            "Ref": "cdkclaude37AppVpcPrivateSubnet2Subnet97E0DEA4"
+                            "Ref": "claude37mcpAppVpcPrivateSubnet2SubnetBBA1C5B5"
                           }
                         ],
                         "securityGroups": [
                           {
                             "Fn::GetAtt": [
-                              "cdkclaude37SecurityGroupECS28A1ED9E",
+                              "claude37mcpSecurityGroupECS8E7E44AC",
                               "GroupId"
                             ]
                           }
                         ]
                       }
                     },
-                    "serviceName": "cdk-claude37-stl-front",
+                    "serviceName": "claude37-mcp-stl-front",
                     "taskDefinition": {
-                      "Ref": "cdkclaude37WebappTaskDef322CDECC"
+                      "Ref": "claude37mcpWebappTaskDef21E8054F"
                     }
                   }
                 },
@@ -1387,13 +1403,13 @@
               "metadata": []
             }
           },
-          "cdk-claude37CfDist": {
-            "id": "cdk-claude37CfDist",
-            "path": "cdk-claude37/cdk-claude37CfDist",
+          "claude37-mcpCfDist": {
+            "id": "claude37-mcpCfDist",
+            "path": "claude37-mcp/claude37-mcpCfDist",
             "children": {
               "Origin1": {
                 "id": "Origin1",
-                "path": "cdk-claude37/cdk-claude37CfDist/Origin1",
+                "path": "claude37-mcp/claude37-mcpCfDist/Origin1",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
@@ -1401,7 +1417,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-claude37/cdk-claude37CfDist/Resource",
+                "path": "claude37-mcp/claude37-mcpCfDist/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
                   "aws:cdk:cloudformation:props": {
@@ -1411,15 +1427,15 @@
                         {
                           "domainName": {
                             "Fn::GetAtt": [
-                              "cdkclaude37Alb11D6988B",
+                              "claude37mcpAlb6DC637E4",
                               "DNSName"
                             ]
                           },
-                          "id": "cdkclaude37cdkclaude37CfDistOrigin141C8FB44",
+                          "id": "claude37mcpclaude37mcpCfDistOrigin15984A6ED",
                           "originCustomHeaders": [
                             {
                               "headerName": "X-Custom-Header",
-                              "headerValue": "My_random_value_37asv15e4s38"
+                              "headerValue": "My_random_value_77mcp15e4s38"
                             }
                           ],
                           "customOriginConfig": {
@@ -1435,7 +1451,7 @@
                       ],
                       "defaultCacheBehavior": {
                         "pathPattern": "*",
-                        "targetOriginId": "cdkclaude37cdkclaude37CfDistOrigin141C8FB44",
+                        "targetOriginId": "claude37mcpclaude37mcpCfDistOrigin15984A6ED",
                         "allowedMethods": [
                           "GET",
                           "HEAD",
@@ -1469,7 +1485,7 @@
           },
           "CloudFrontDistributionURL": {
             "id": "CloudFrontDistributionURL",
-            "path": "cdk-claude37/CloudFrontDistributionURL",
+            "path": "claude37-mcp/CloudFrontDistributionURL",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "2.181.1"
@@ -1477,11 +1493,11 @@
           },
           "CDKMetadata": {
             "id": "CDKMetadata",
-            "path": "cdk-claude37/CDKMetadata",
+            "path": "claude37-mcp/CDKMetadata",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "cdk-claude37/CDKMetadata/Default",
+                "path": "claude37-mcp/CDKMetadata/Default",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "2.181.1"
@@ -1489,7 +1505,7 @@
               },
               "Condition": {
                 "id": "Condition",
-                "path": "cdk-claude37/CDKMetadata/Condition",
+                "path": "claude37-mcp/CDKMetadata/Condition",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnCondition",
                   "version": "2.181.1"
@@ -1503,7 +1519,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "cdk-claude37/BootstrapVersion",
+            "path": "claude37-mcp/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "2.181.1"
@@ -1511,7 +1527,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "cdk-claude37/CheckBootstrapVersion",
+            "path": "claude37-mcp/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "2.181.1"

@@ -1,5 +1,59 @@
 # Claude 3.7 Sonnet MCP 챗봇
 
+## 아키텍처 구성도
+
+```mermaid
+flowchart LR
+    Client([사용자]) --> CloudFront[CloudFront - 분산 컨텐츠 전송 네트워크]
+    CloudFront --> ALB[Application Load Balancer - 트래픽 분산]
+    ALB --> ECS[Amazon ECS - Bedrock 챗봇 컨테이너]
+    
+    %% 서브그래프로 ECS 컨테이너 내부 구조 표현
+    subgraph ECSContainer[ECS 컨테이너 내부]
+        App[호스트 앱 : app.py / Streamlit] --> MCPClients[MCP 클라이언트 : XXX_mcp_client.py]
+        MCPClients --> MCPServers[MCP 서버 : XXX_mcp_server.py]
+        MCPServers --> ExternalAPIs[외부 서비스/API]
+        
+        %% 구체적인 MCP 기능들
+        subgraph MCPFunctions[MCP 기능]
+            GoogleSearch[Google 웹 검색]
+            DateTime[날짜/시간 정보]
+        end
+        
+        MCPServers --- MCPFunctions
+    end
+    
+    ECS --> Bedrock[Amazon Bedrock - Claude 3.7 Sonnet]
+    ExternalAPIs --> GoogleAPI[Google Search API]
+    ExternalAPIs --> SystemTime[시스템 날짜/시간]
+    
+    %% 스타일 정의
+    classDef aws fill:#FF9900,stroke:#232F3E,stroke-width:2px,color:#232F3E;
+    classDef client fill:#D4F4FA,stroke:#0078D4,stroke-width:2px,color:#000000;
+    classDef mcp fill:#B9EDDD,stroke:#0B666A,stroke-width:2px,color:#000000;
+    classDef external fill:#F8F0E5,stroke:#35374B,stroke-width:1px,color:#000000;
+    
+    %% 스타일 적용
+    class CloudFront,ALB,ECS,Bedrock aws;
+    class Client client;
+    class App,MCPClients,MCPServers,MCPFunctions,GoogleSearch,DateTime mcp;
+    class ExternalAPIs,GoogleAPI,SystemTime external;
+```
+
+## 아키텍처 개요
+
+이 프로젝트는 다음과 같은 AWS 클라우드 아키텍처를 기반으로 배포됩니다:
+
+1. **사용자 접근**: 사용자는 CloudFront를 통해 웹 애플리케이션에 접속합니다.
+2. **트래픽 분산**: CloudFront는 트래픽을 Application Load Balancer(ALB)로 전달하고, ALB는 이를 ECS 컨테이너로 분산시킵니다.
+3. **챗봇 컨테이너**: ECS에서 실행되는 컨테이너 내부에는:
+   - Streamlit 기반의 호스트 앱(app.py)
+   - MCP 클라이언트 및 서버 컴포넌트
+   - Google 검색 및 날짜/시간 정보 기능
+4. **AI 모델**: 챗봇은 Amazon Bedrock의 Claude 3.7 Sonnet 모델을 사용하여 사용자 질의에 응답합니다.
+5. **외부 서비스**: MCP 서버는 Google Search API 및 시스템 시간/날짜 기능과 같은 외부 서비스와 통신합니다.
+
+
 이 프로젝트는 Amazon Bedrock의 Claude 3.7 Sonnet을 사용하여 구현된 지능형 챗봇으로, Model Context Protocol (MCP)를 통해 두 가지 추가 기능을 제공합니다:
 
 1. Google 웹 검색 기능
@@ -19,8 +73,23 @@
 
 Model Context Protocol(MCP)의 호출 흐름은 다음과 같은 계층 구조로 이루어집니다:
 
-```
-[호스트 앱 - app.py] → [MCP Client] → [MCP Server] → [외부 서비스/API]
+```mermaid
+flowchart LR
+    HostApp[호스트 앱 - app.py] --> MCPClient[MCP 클라이언트 : XXX_mcp_client.py]
+    MCPClient --> MCPServer[MCP 서버 : XXX_mcp_server.py]
+    MCPServer --> ExternalAPI[외부 서비스/API]
+    
+    %% 스타일 정의
+    classDef host fill:#D4E6F1,stroke:#3498DB,stroke-width:2px,color:#000000;
+    classDef client fill:#D5F5E3,stroke:#2ECC71,stroke-width:2px,color:#000000;
+    classDef server fill:#FCF3CF,stroke:#F1C40F,stroke-width:2px,color:#000000;
+    classDef external fill:#FADBD8,stroke:#E74C3C,stroke-width:2px,color:#000000;
+    
+    %% 스타일 적용
+    class HostApp host;
+    class MCPClient client;
+    class MCPServer server;
+    class ExternalAPI external;
 ```
 
 1. **호스트 애플리케이션(app.py)**

@@ -30,8 +30,23 @@ Amazon Bedrock을 기반으로 한 MCP를 활용한 문서 Q&A 챗봇 프로젝�
 
 Model Context Protocol(MCP)의 호출 흐름은 다음과 같은 계층 구조로 이루어집니다:
 
-```
-[호스트 앱 - app.py] → [MCP Client] → [MCP Server] → [외부 서비스/API]
+```mermaid
+flowchart LR
+    HostApp[호스트 앱 - app.py] --> MCPClient[MCP 클라이언트 : XXX_mcp_client.py]
+    MCPClient --> MCPServer[MCP 서버 : XXX_mcp_server.py]
+    MCPServer --> ExternalAPI[외부 서비스/API]
+    
+    %% 스타일 정의
+    classDef host fill:#D4E6F1,stroke:#3498DB,stroke-width:2px,color:#000000;
+    classDef client fill:#D5F5E3,stroke:#2ECC71,stroke-width:2px,color:#000000;
+    classDef server fill:#FCF3CF,stroke:#F1C40F,stroke-width:2px,color:#000000;
+    classDef external fill:#FADBD8,stroke:#E74C3C,stroke-width:2px,color:#000000;
+    
+    %% 스타일 적용
+    class HostApp host;
+    class MCPClient client;
+    class MCPServer server;
+    class ExternalAPI external;
 ```
 
 - **통신 방식**: 

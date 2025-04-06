@@ -1,0 +1,1401 @@
+{
+ "Resources": {
+  "claude37mcpAppVpc2EB32763": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "claude37-mcp-stl-vpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/Resource"
+   }
+  },
+  "claude37mcpAppVpcPublicSubnet1SubnetC664CCD3": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "claude37mcpAppVpc2EB32763"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1/Subnet"
+   }
+  },
+  "claude37mcpAppVpcPublicSubnet1RouteTable6368330D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "claude37mcpAppVpc2EB32763"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1/RouteTable"
+   }
+  },
+  "claude37mcpAppVpcPublicSubnet1RouteTableAssociationA8E694F3": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "claude37mcpAppVpcPublicSubnet1RouteTable6368330D"
+    },
+    "SubnetId": {
+     "Ref": "claude37mcpAppVpcPublicSubnet1SubnetC664CCD3"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1/RouteTableAssociation"
+   }
+  },
+  "claude37mcpAppVpcPublicSubnet1DefaultRouteED2B51A2": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "claude37mcpAppVpcIGW6D8CB256"
+    },
+    "RouteTableId": {
+     "Ref": "claude37mcpAppVpcPublicSubnet1RouteTable6368330D"
+    }
+   },
+   "DependsOn": [
+    "claude37mcpAppVpcVPCGWD6B8EE90"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1/DefaultRoute"
+   }
+  },
+  "claude37mcpAppVpcPublicSubnet1EIP47E36338": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1/EIP"
+   }
+  },
+  "claude37mcpAppVpcPublicSubnet1NATGatewayEB144A1C": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "claude37mcpAppVpcPublicSubnet1EIP47E36338",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "claude37mcpAppVpcPublicSubnet1SubnetC664CCD3"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "claude37mcpAppVpcPublicSubnet1DefaultRouteED2B51A2",
+    "claude37mcpAppVpcPublicSubnet1RouteTableAssociationA8E694F3"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet1/NATGateway"
+   }
+  },
+  "claude37mcpAppVpcPublicSubnet2Subnet0C6D74DE": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "claude37mcpAppVpc2EB32763"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2/Subnet"
+   }
+  },
+  "claude37mcpAppVpcPublicSubnet2RouteTable3F07DF6F": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "claude37mcpAppVpc2EB32763"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2/RouteTable"
+   }
+  },
+  "claude37mcpAppVpcPublicSubnet2RouteTableAssociationED8632D2": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "claude37mcpAppVpcPublicSubnet2RouteTable3F07DF6F"
+    },
+    "SubnetId": {
+     "Ref": "claude37mcpAppVpcPublicSubnet2Subnet0C6D74DE"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2/RouteTableAssociation"
+   }
+  },
+  "claude37mcpAppVpcPublicSubnet2DefaultRouteFBB928B3": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "claude37mcpAppVpcIGW6D8CB256"
+    },
+    "RouteTableId": {
+     "Ref": "claude37mcpAppVpcPublicSubnet2RouteTable3F07DF6F"
+    }
+   },
+   "DependsOn": [
+    "claude37mcpAppVpcVPCGWD6B8EE90"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PublicSubnet2/DefaultRoute"
+   }
+  },
+  "claude37mcpAppVpcPrivateSubnet1Subnet6C9FFEA9": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "claude37mcpAppVpc2EB32763"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1/Subnet"
+   }
+  },
+  "claude37mcpAppVpcPrivateSubnet1RouteTable0C57C5F2": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "claude37mcpAppVpc2EB32763"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1/RouteTable"
+   }
+  },
+  "claude37mcpAppVpcPrivateSubnet1RouteTableAssociation904A799B": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "claude37mcpAppVpcPrivateSubnet1RouteTable0C57C5F2"
+    },
+    "SubnetId": {
+     "Ref": "claude37mcpAppVpcPrivateSubnet1Subnet6C9FFEA9"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1/RouteTableAssociation"
+   }
+  },
+  "claude37mcpAppVpcPrivateSubnet1DefaultRoute6AC4635C": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "claude37mcpAppVpcPublicSubnet1NATGatewayEB144A1C"
+    },
+    "RouteTableId": {
+     "Ref": "claude37mcpAppVpcPrivateSubnet1RouteTable0C57C5F2"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet1/DefaultRoute"
+   }
+  },
+  "claude37mcpAppVpcPrivateSubnet2SubnetBBA1C5B5": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "claude37mcpAppVpc2EB32763"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2/Subnet"
+   }
+  },
+  "claude37mcpAppVpcPrivateSubnet2RouteTable55177453": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "claude37mcpAppVpc2EB32763"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2/RouteTable"
+   }
+  },
+  "claude37mcpAppVpcPrivateSubnet2RouteTableAssociation5FD81A6A": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "claude37mcpAppVpcPrivateSubnet2RouteTable55177453"
+    },
+    "SubnetId": {
+     "Ref": "claude37mcpAppVpcPrivateSubnet2SubnetBBA1C5B5"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2/RouteTableAssociation"
+   }
+  },
+  "claude37mcpAppVpcPrivateSubnet2DefaultRouteEAC0C490": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "claude37mcpAppVpcPublicSubnet1NATGatewayEB144A1C"
+    },
+    "RouteTableId": {
+     "Ref": "claude37mcpAppVpcPrivateSubnet2RouteTable55177453"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/PrivateSubnet2/DefaultRoute"
+   }
+  },
+  "claude37mcpAppVpcIGW6D8CB256": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "claude37-mcp-stl-vpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/IGW"
+   }
+  },
+  "claude37mcpAppVpcVPCGWD6B8EE90": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "claude37mcpAppVpcIGW6D8CB256"
+    },
+    "VpcId": {
+     "Ref": "claude37mcpAppVpc2EB32763"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/VPCGW"
+   }
+  },
+  "claude37mcpAppVpcRestrictDefaultSecurityGroupCustomResourceC6FB6D65": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "claude37mcpAppVpc2EB32763",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAppVpc/RestrictDefaultSecurityGroupCustomResource/Default"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "claude37mcpAppVpc2EB32763",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "7fa1e366ee8a9ded01fc355f704cff92bfd179574e6f9cfee800a3541df1b200.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.7fa1e366ee8a9ded01fc355f704cff92bfd179574e6f9cfee800a3541df1b200",
+    "aws:asset:property": "Code"
+   }
+  },
+  "claude37mcpSecurityGroupECS8E7E44AC": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "claude37-mcp/claude37-mcpSecurityGroupECS",
+    "GroupName": "claude37-mcp-stl-ecs-sg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "claude37mcpAppVpc2EB32763"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpSecurityGroupECS/Resource"
+   }
+  },
+  "claude37mcpSecurityGroupECSfromclaude37mcpclaude37mcpSecurityGroupALB880AE55185019E64E95F": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "ALB traffic",
+    "FromPort": 8501,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "claude37mcpSecurityGroupECS8E7E44AC",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "claude37mcpSecurityGroupALBC5607C78",
+      "GroupId"
+     ]
+    },
+    "ToPort": 8501
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpSecurityGroupECS/from claude37mcpclaude37mcpSecurityGroupALB880AE551:8501"
+   }
+  },
+  "claude37mcpSecurityGroupALBC5607C78": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "claude37-mcp/claude37-mcpSecurityGroupALB",
+    "GroupName": "claude37-mcp-stl-alb-sg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow from anyone on port 80",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     }
+    ],
+    "VpcId": {
+     "Ref": "claude37mcpAppVpc2EB32763"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpSecurityGroupALB/Resource"
+   }
+  },
+  "claude37mcpClusterED3556E5": {
+   "Type": "AWS::ECS::Cluster",
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpCluster/Resource"
+   }
+  },
+  "claude37mcpCluster41D2B9B8": {
+   "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
+   "Properties": {
+    "CapacityProviders": [
+     "FARGATE",
+     "FARGATE_SPOT"
+    ],
+    "Cluster": {
+     "Ref": "claude37mcpClusterED3556E5"
+    },
+    "DefaultCapacityProviderStrategy": []
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpCluster/claude37-mcpCluster"
+   }
+  },
+  "claude37mcpAlb6DC637E4": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Name": "claude37-mcp-stl",
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "claude37mcpSecurityGroupALBC5607C78",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "claude37mcpAppVpcPublicSubnet1SubnetC664CCD3"
+     },
+     {
+      "Ref": "claude37mcpAppVpcPublicSubnet2Subnet0C6D74DE"
+     }
+    ],
+    "Type": "application"
+   },
+   "DependsOn": [
+    "claude37mcpAppVpcPublicSubnet1DefaultRouteED2B51A2",
+    "claude37mcpAppVpcPublicSubnet1RouteTableAssociationA8E694F3",
+    "claude37mcpAppVpcPublicSubnet2DefaultRouteFBB928B3",
+    "claude37mcpAppVpcPublicSubnet2RouteTableAssociationED8632D2"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAlb/Resource"
+   }
+  },
+  "claude37mcpAlbclaude37mcpHttpListenerD0050E83": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "FixedResponseConfig": {
+       "ContentType": "text/plain",
+       "MessageBody": "Access denied",
+       "StatusCode": "403"
+      },
+      "Type": "fixed-response"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "claude37mcpAlb6DC637E4"
+    },
+    "Port": 80,
+    "Protocol": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAlb/claude37-mcpHttpListener/Resource"
+   }
+  },
+  "claude37mcpAlbclaude37mcpHttpListenerclaude37mcpTargetGroupGroup0B4552CD": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "Name": "claude37-mcp-tg",
+    "Port": 8501,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "VpcId": {
+     "Ref": "claude37mcpAppVpc2EB32763"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAlb/claude37-mcpHttpListener/claude37-mcpTargetGroupGroup/Resource"
+   }
+  },
+  "claude37mcpAlbclaude37mcpHttpListenerclaude37mcpTargetGroupRule6E7BF85A": {
+   "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+   "Properties": {
+    "Actions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "claude37mcpAlbclaude37mcpHttpListenerclaude37mcpTargetGroupGroup0B4552CD"
+      },
+      "Type": "forward"
+     }
+    ],
+    "Conditions": [
+     {
+      "Field": "http-header",
+      "HttpHeaderConfig": {
+       "HttpHeaderName": "X-Custom-Header",
+       "Values": [
+        "My_random_value_77mcp15e4s38"
+       ]
+      }
+     }
+    ],
+    "ListenerArn": {
+     "Ref": "claude37mcpAlbclaude37mcpHttpListenerD0050E83"
+    },
+    "Priority": 1
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpAlb/claude37-mcpHttpListener/claude37-mcpTargetGroupRule/Resource"
+   }
+  },
+  "claude37mcpWebappTaskDefTaskRole8C74D28F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonBedrockFullAccess"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpWebappTaskDef/TaskRole/Resource"
+   }
+  },
+  "claude37mcpWebappTaskDef21E8054F": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Environment": [
+       {
+        "Name": "AWS_REGION",
+        "Value": {
+         "Ref": "AWS::Region"
+        }
+       },
+       {
+        "Name": "GOOGLE_API_KEY",
+        "Value": "AIzaSyCHEKHvxl4DogV3gU6R_XyUAOhuPkBmWNI"
+       },
+       {
+        "Name": "GOOGLE_SEARCH_ENGINE_ID",
+        "Value": "63c5c04d0d4af48e7"
+       }
+      ],
+      "Essential": true,
+      "Image": {
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:c307f8a99d16b3aa248f121786d5b3613c7c0fb3ecf03ae3e2d4cbabed677a3c"
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "claude37mcpWebappTaskDefclaude37mcpWebContainerLogGroup9856E31B"
+        },
+        "awslogs-stream-prefix": "WebContainerLogs",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
+      "Name": "claude37-mcpWebContainer",
+      "PortMappings": [
+       {
+        "ContainerPort": 8501,
+        "Protocol": "tcp"
+       }
+      ]
+     }
+    ],
+    "Cpu": "1024",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "claude37mcpWebappTaskDefExecutionRoleCB46AA8D",
+      "Arn"
+     ]
+    },
+    "Family": "claude37mcpclaude37mcpWebappTaskDefDE3EFBFA",
+    "Memory": "2048",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "claude37mcpWebappTaskDefTaskRole8C74D28F",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpWebappTaskDef/Resource"
+   }
+  },
+  "claude37mcpWebappTaskDefclaude37mcpWebContainerLogGroup9856E31B": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpWebappTaskDef/claude37-mcpWebContainer/LogGroup/Resource"
+   }
+  },
+  "claude37mcpWebappTaskDefExecutionRoleCB46AA8D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpWebappTaskDef/ExecutionRole/Resource"
+   }
+  },
+  "claude37mcpWebappTaskDefExecutionRoleDefaultPolicyC3F843CA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":repository/",
+          {
+           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "claude37mcpWebappTaskDefclaude37mcpWebContainerLogGroup9856E31B",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "claude37mcpWebappTaskDefExecutionRoleDefaultPolicyC3F843CA",
+    "Roles": [
+     {
+      "Ref": "claude37mcpWebappTaskDefExecutionRoleCB46AA8D"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpWebappTaskDef/ExecutionRole/DefaultPolicy/Resource"
+   }
+  },
+  "claude37mcpECSService207F75F3": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "claude37mcpClusterED3556E5"
+    },
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "DeploymentCircuitBreaker": {
+      "Enable": true,
+      "Rollback": true
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "DeploymentController": {
+     "Type": "ECS"
+    },
+    "EnableECSManagedTags": false,
+    "HealthCheckGracePeriodSeconds": 60,
+    "LaunchType": "FARGATE",
+    "LoadBalancers": [
+     {
+      "ContainerName": "claude37-mcpWebContainer",
+      "ContainerPort": 8501,
+      "TargetGroupArn": {
+       "Ref": "claude37mcpAlbclaude37mcpHttpListenerclaude37mcpTargetGroupGroup0B4552CD"
+      }
+     }
+    ],
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "claude37mcpSecurityGroupECS8E7E44AC",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "claude37mcpAppVpcPrivateSubnet1Subnet6C9FFEA9"
+       },
+       {
+        "Ref": "claude37mcpAppVpcPrivateSubnet2SubnetBBA1C5B5"
+       }
+      ]
+     }
+    },
+    "ServiceName": "claude37-mcp-stl-front",
+    "TaskDefinition": {
+     "Ref": "claude37mcpWebappTaskDef21E8054F"
+    }
+   },
+   "DependsOn": [
+    "claude37mcpAlbclaude37mcpHttpListenerclaude37mcpTargetGroupRule6E7BF85A",
+    "claude37mcpWebappTaskDefTaskRole8C74D28F"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpECSService/Service"
+   }
+  },
+  "claude37mcpCfDist55197723": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "AllowedMethods": [
+       "GET",
+       "HEAD",
+       "OPTIONS",
+       "PUT",
+       "PATCH",
+       "POST",
+       "DELETE"
+      ],
+      "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+      "Compress": true,
+      "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
+      "TargetOriginId": "claude37mcpclaude37mcpCfDistOrigin15984A6ED",
+      "ViewerProtocolPolicy": "redirect-to-https"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "http-only",
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::GetAtt": [
+         "claude37mcpAlb6DC637E4",
+         "DNSName"
+        ]
+       },
+       "Id": "claude37mcpclaude37mcpCfDistOrigin15984A6ED",
+       "OriginCustomHeaders": [
+        {
+         "HeaderName": "X-Custom-Header",
+         "HeaderValue": "My_random_value_77mcp15e4s38"
+        }
+       ],
+       "OriginShield": {
+        "Enabled": false
+       }
+      }
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/claude37-mcpCfDist/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31Ty27bMBD8ltxpBnYv7dGx08BA0ApykGuwotfK1hIpkEsHhqB/z1KyIqUNeuLsi5ydkVZ6+X2plzfwFhbmcFpUVOh2z2BOSlIvLZqVbp8bozZH+5xtVBaLisw+FhY55SaUu8j4BEWFU37KrUNwhoDJ2Y/mBO53WTp+AT8A4xtcVObpLHC6eGcZveCxYWByjdYsXF9rtKz2aKInvjx4F5uew38TO1t6DKFTaIJuN1UM8kzq+hduoAEjc5l3Zzqgny0T1E/wJaQtw2mLR7I07vh3xlkGsuhnuevsHv2ZzKDbAIVVBYHJVA4OBVRgDdnyLF6sm0YM6N9+lNpdXxvYfornfSRL2GvPiGf1J2Eh8o4qzcMvbsnj4PA87hRBrdvcDaX+zJxM9m4NKAntXyAE5KC3zpzQ72oo05chPktN59i4QOz85Q4CqsqVYsyjKz+YjbhToks8HL1IqtutEPFUxFH3edx1Ksfgok/qipeunkLh+XVptLln0dOTH6IU/dPM78hN5E5lF3519vabXq70j5s/gWjho2WqUefD+Q6sjlKGWwMAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "claude37-mcp/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "CloudFrontDistributionURL": {
+   "Value": {
+    "Fn::GetAtt": [
+     "claude37mcpCfDist55197723",
+     "DomainName"
+    ]
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
