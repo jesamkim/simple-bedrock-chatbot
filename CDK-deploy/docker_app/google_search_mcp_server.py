@@ -3,6 +3,8 @@ import requests
 import os
 import argparse
 import json
+import re
+import boto3
 from typing import List, Dict, Any, Optional
 import nltk
 
@@ -32,6 +34,16 @@ class GoogleSearchServer:
         self.api_key = os.environ.get('GOOGLE_API_KEY')
         self.search_engine_id = os.environ.get('GOOGLE_SEARCH_ENGINE_ID')
         
+        # AWS 리전 설정
+        self.aws_region = os.environ.get('AWS_REGION', 'us-west-2')
+        
+        # boto3 클라이언트 초기화
+        try:
+            self.bedrock_client = boto3.client('bedrock-runtime', region_name=self.aws_region)
+        except Exception as e:
+            print(f"boto3 클라이언트 초기화 오류: {str(e)}")
+            self.bedrock_client = None
+            
         if not self.api_key or not self.search_engine_id:
             print("경고: Google API Key 또는 Search Engine ID가 설정되지 않았습니다. 환경 변수를 확인하세요.")
             print("GOOGLE_API_KEY와 GOOGLE_SEARCH_ENGINE_ID 환경 변수를 설정해야 합니다.")
@@ -40,30 +52,92 @@ class GoogleSearchServer:
     def extract_keywords(self, text: str) -> List[str]:
         """
         주어진 텍스트에서 중요 키워드를 추출합니다.
+        Claude 3.7을 사용하여 검색에 최적화된 키워드를 추출하고,
+        실패할 경우 기존 방식으로 폴백합니다.
         
         Args:
             text: 키워드를 추출할 텍스트
             
         Returns:
-            추출된 키워드 리스트 (최대 5개)
+            추출된 키워드 리스트
         """
-        # 한국어와 영어 둘 다 처리할 수 있도록 합니다.
-        stop_words = set(stopwords.words('english'))
+        # Claude를 사용한 키워드 추출 시도
+        if self.bedrock_client:
+            try:
+                # Claude에 전달할 시스템 프롬프트
+                system_prompt = """당신은 검색 쿼리 최적화 전문가입니다.
+사용자 질문을 분석하여 Google 검색에 가장 효과적인 키워드를 추출해주세요.
+
+1. 한글 검색어의 경우 조사나 접미사는 제거하고 핵심 키워드만 추출
+2. 질문의 의도를 파악하여 가장 중요한 명사, 고유명사, 용어를 추출
+3. 검색 결과의 정확도를 높이기 위한 키워드 조합 제공
+4. '출시일', '가격', '사양' 등 검색의 목적을 나타내는 단어도 포함
+5. 키워드는 공백으로 구분된 문자열로 반환
+
+예시:
+질문: "마비노기 모바일 출시일이 언제인가요?"
+키워드: "마비노기 모바일 출시일"
+
+질문: "스타워즈 에피소드9 개봉일에 대해 알려줘"
+키워드: "스타워즈 에피소드9 개봉일"
+"""
+
+                # Claude API 호출
+                response = self.bedrock_client.invoke_model(
+                    modelId="us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+                    body=json.dumps({
+                        "anthropic_version": "bedrock-2023-05-31",
+                        "max_tokens": 100,
+                        "temperature": 0,
+                        "system": system_prompt,
+                        "messages": [
+                            {"role": "user", "content": f"질문: {text}\n\n검색에 사용할 키워드를 추출해주세요."}
+                        ]
+                    })
+                )
+                
+                # 응답 파싱
+                response_body = json.loads(response['body'].read())
+                extracted_text = response_body.get('content', [{'text': ''}])[0]['text'].strip()
+                
+                # '키워드:', 'Keywords:' 등의 접두어 제거
+                keywords_text = re.sub(r'^(keywords:|키워드:|\s|\")+', '', extracted_text, flags=re.IGNORECASE)
+                keywords_text = re.sub(r'(\"|\s)+$', '', keywords_text)
+                
+                # 결과가 있으면 공백으로 분할된 키워드 리스트 반환
+                if keywords_text:
+                    keywords = keywords_text.split()
+                    print(f"Claude 키워드 추출 성공: {keywords}")
+                    return keywords
+                
+            except Exception as e:
+                print(f"Claude 키워드 추출 중 오류: {str(e)}")
+                # 오류 시 기존 방식으로 폴백
         
-        # 텍스트를 직접 토큰화합니다 (간단한 공백 기반 토큰화)
-        word_tokens = text.lower().split()
-        
-        # 불용어를 제거하고 길이가 2 이상인 단어만 선택합니다.
-        keywords = [word for word in word_tokens if word not in stop_words and len(word) > 2 and word.isalnum()]
-        
-        # 중복 제거 및 빈도 기반 정렬
-        keyword_freq = {}
-        for word in keywords:
-            keyword_freq[word] = keyword_freq.get(word, 0) + 1
-        
-        # 빈도수 기준 상위 5개 키워드 반환
-        sorted_keywords = sorted(keyword_freq.items(), key=lambda x: x[1], reverse=True)
-        return [word for word, freq in sorted_keywords[:5]]
+        # 기존 키워드 추출 로직 (폴백)
+        try:
+            # 한국어와 영어 둘 다 처리할 수 있도록 합니다.
+            stop_words = set(stopwords.words('english'))
+            
+            # 텍스트를 직접 토큰화합니다 (간단한 공백 기반 토큰화)
+            word_tokens = text.lower().split()
+            
+            # 불용어를 제거하고 길이가 1 이상인 단어만 선택합니다. (isalnum 제약 완화)
+            keywords = [word for word in word_tokens if word not in stop_words and len(word) > 1]
+            
+            # 중복 제거 및 빈도 기반 정렬
+            keyword_freq = {}
+            for word in keywords:
+                keyword_freq[word] = keyword_freq.get(word, 0) + 1
+            
+            # 빈도수 기준 상위 5개 키워드 반환
+            sorted_keywords = sorted(keyword_freq.items(), key=lambda x: x[1], reverse=True)
+            return [word for word, freq in sorted_keywords[:5]] if sorted_keywords else text.split()
+            
+        except Exception as e:
+            print(f"기존 키워드 추출 중 오류: {str(e)}")
+            # 모든 추출 방식이 실패한 경우 입력 텍스트를 단순 분할
+            return text.split()
     
     def search(self, query: str) -> List[Dict[str, str]]:
         """
