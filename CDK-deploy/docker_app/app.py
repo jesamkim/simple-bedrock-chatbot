@@ -429,10 +429,12 @@ def generate_response(
                 
                 # 분석 결과 표시
                 with st.expander("🧩 질의 의도 분석 결과", expanded=False):
+                    relative_importance = intent_analysis.get("relative_importance", "search")
                     st.markdown(f"""
                     **의도 유형:** {intent} {f'({subtype})' if subtype and subtype != 'none' else ''}
                     **날짜/시간 정보 필요:** {'✅' if datetime_needed else '❌'}
-                    **웹 검색 필요:** {'✅' if search_needed else '❌'}
+                    **웹 검색 필요:** {'✅' if search_needed else '❌'} 
+                    **정보 우선순위:** {relative_importance.upper()}
                     **분석 이유:** {reasoning}
                     """)
                 
@@ -483,29 +485,86 @@ def generate_response(
             
             # MCP 정보를 프롬프트에 포함
             if mcp_enable:
+                # 질의 분석 결과 가져오기
+                relative_importance = intent_analysis.get("relative_importance", "search")
+                
                 # 검색 결과와 날짜/시간 정보가 모두 있는 경우
                 if search_results_text and datetime_info_text:
-                    enhanced_input = f"""질문: {input_text}
+                    # 중요도에 따라 다른 프롬프트 사용
+                    if relative_importance == "search":
+                        # 검색 결과가 더 중요한 경우 (날씨, 뉴스 등)
+                        enhanced_input = f"""질문: {input_text}
                     
-다음은 질문과 관련된 정보입니다:
+다음 정보를 바탕으로 질문에 답변해 주세요:
 
-[인터넷 검색 결과]
+[주요 정보] 검색 결과:
 {search_results_text}
 
-[날짜/시간 정보]
+[참고 정보] 현재 날짜/시간:
 {datetime_info_text}
 
-위 정보를 참고하여 질문에 답변해주세요. 답변에서 인용한 정보가 있다면 반드시 그 출처를 명시해주세요."""
+중요 지침:
+1. 검색 결과에서 질문과 관련된 정보를 최대한 추출하여 답변하세요.
+2. "정보를 찾을 수 없다"고 답변하기 전에 검색 결과를 다시 확인하세요.
+3. 검색 결과에 숫자, 데이터, 사실 등이 포함되어 있다면 그 정보를 적극 활용하세요.
+4. 검색 결과의 링크만 안내하지 말고, 실제 내용을 분석하여 답변하세요.
+5. 날짜/시간 정보는 필요한 경우에만 부가 정보로 활용하세요.
+6. 답변에서 인용한 정보가 있다면 반드시 그 출처를 [1], [2]와 같은 형식으로 명시해주세요."""
+                    
+                    elif relative_importance == "datetime":
+                        # 날짜/시간이 더 중요한 경우 (시간 계산 등)
+                        enhanced_input = f"""질문: {input_text}
+                    
+다음 정보를 바탕으로 질문에 답변해 주세요:
+
+[주요 정보] 현재 날짜/시간:
+{datetime_info_text}
+
+[참고 정보] 검색 결과:
+{search_results_text}
+
+중요 지침:
+1. 날짜/시간 정보를 주요 정보원으로 활용하세요.
+2. 검색 결과도 철저히 분석하여 관련 정보를 추출하세요.
+3. "정보를 찾을 수 없다"고 답변하기 전에 제공된 모든 정보를 다시 확인하세요.
+4. 검색 결과의 링크만 안내하지 말고, 실제 내용을 분석하여 답변하세요.
+5. 답변에서 인용한 정보가 있다면 반드시 그 출처를 명시해주세요."""
+                    
+                    else:  # "both"
+                        # 두 정보가 모두 필요한 경우
+                        enhanced_input = f"""질문: {input_text}
+                    
+다음은 질문에 답변하기 위한 두 가지 중요 정보입니다:
+
+[1] 검색 결과:
+{search_results_text}
+
+[2] 현재 날짜/시간 정보:
+{datetime_info_text}
+
+중요 지침:
+1. 두 정보를 모두 활용하여 종합적인 답변을 제공하세요.
+2. 검색 결과에서 관련 정보를 최대한 추출하세요.
+3. "정보를 찾을 수 없다"고 답변하기 전에 검색 결과를 철저히 분석하세요.
+4. 검색 결과에 숫자, 데이터, 사실 등이 포함되어 있다면 그 정보를 적극 활용하세요.
+5. 검색 결과의 링크만 안내하지 말고, 실제 내용을 분석하여 답변하세요.
+6. 답변에서 인용한 정보가 있다면 반드시 그 출처를 [1] 또는 [2]와 같은 형식으로 명시해주세요."""
+                        
                     messages.append(HumanMessage(content=enhanced_input))
                 
                 # 검색 결과만 있는 경우
                 elif search_results_text:
                     enhanced_input = f"""질문: {input_text}
                     
-다음은 질문과 관련된 인터넷 검색 결과입니다:
+다음은 질문과 관련된 검색 결과입니다:
 {search_results_text}
 
-위 정보를 참고하여 질문에 답변해주세요. 답변에서 인용한 정보가 있다면 반드시 그 출처(번호)를 [1], [2]와 같은 형식으로 명시해주세요."""
+중요 지침:
+1. 검색 결과를 철저히 분석하여 질문에 대한 정보를 최대한 추출하세요.
+2. "정보를 찾을 수 없다"고 답변하기 전에 검색 결과를 다시 검토하세요.
+3. 검색 결과에 숫자, 데이터, 사실 등이 포함되어 있다면 그 정보를 적극 활용하세요.
+4. 검색 결과의 링크만 안내하지 말고, 실제 내용을 분석하여 답변하세요.
+5. 답변에서 인용한 정보가 있다면 반드시 그 출처(번호)를 [1], [2]와 같은 형식으로 명시해주세요."""
                     messages.append(HumanMessage(content=enhanced_input))
                 
                 # 날짜/시간 정보만 있는 경우
@@ -515,7 +574,7 @@ def generate_response(
 다음은 현재 날짜/시간 정보입니다:
 {datetime_info_text}
 
-위 정보를 참고하여 질문에 답변해주세요."""
+이 정보를 활용하여 질문에 답변해주세요. 추가적인 정보가 필요하다고 느껴지면 솔직하게 그 사실을 알려주세요."""
                     messages.append(HumanMessage(content=enhanced_input))
                 
                 # 둘 다 없는 경우
@@ -669,6 +728,7 @@ def analyze_query_intent_with_llm(query: str, client, chat_history=None) -> Dict
             "subtype": 세부 유형 (datetime인 경우 time, date 등),
             "datetime_needed": 날짜/시간 정보 필요 여부 (bool),
             "search_needed": 검색 필요 여부 (bool),
+            "relative_importance": 정보의 상대적 중요도 (search, datetime, both 중 하나),
             "reasoning": 분석 이유
         }
     """
@@ -686,16 +746,19 @@ def analyze_query_intent_with_llm(query: str, client, chat_history=None) -> Dict
 1. 날짜/시간 정보: 현재 시간, 날짜, 요일 등의 정보
 2. 웹 검색: 인터넷에서 특정 정보를 검색
 
-분석해야 할 포인트:
-- 현재 날짜/시간 정보가 필요한가? (예: "지금 몇 시야", "오늘은 무슨 요일이지")
-- 웹 검색이 필요한가? (예: "마비노기 모바일 정보", "파이썬이란?")
-- 두 서비스가 모두 필요한가? (예: "마비노기 모바일 출시일로부터 얼마나 지났어?")
-  => 이런 질문은 "출시일"을 검색하고, "현재 날짜"를 알아야 답변 가능
-  
-특히 다음 경우들에 주의하세요:
-* "~일로부터 얼마나 지났어?" 형태의 질문: 해당 일자 정보(검색)와 현재 날짜(날짜/시간 API) 두 가지 모두 필요함
-* "출시일", "생일", "개업일", "설립일" 등을 포함한 질문: 검색이 필요한 경우가 많음
-* 단순 시간/날짜 질의: "지금 몇 시야?", "오늘 날짜가 어떻게 돼?" 등은 날짜/시간 서비스만 필요
+분석 시 주의사항:
+- "오늘", "지금", "현재" 같은 시간 표현이 있더라도, 실제로 현재 날짜/시간 정보가 필요한지 판단하세요.
+- 시간 표현을 포함한 질문이더라도, 검색 결과만으로 답변 가능한 경우가 많습니다.
+- 다음과 같은 경우에만 현재 날짜/시간 정보가 필요합니다:
+  * 명시적인 시간/날짜 질문 ("지금 몇 시야?", "오늘 무슨 요일이야?")
+  * 두 시간 사이의 계산이 필요한 경우 ("출시된지 얼마나 됐어?")
+  * 날짜에 의존적인 정보 계산 ("오늘 음력으로 며칠이야?")
+
+특히 다음 유형의 질문은 시간 표현은 있지만 실제 날짜/시간 API가 불필요할 수 있습니다:
+- "오늘 날씨는?" → 검색을 통해 현재 날씨 정보를 얻을 수 있음
+- "지금 인기 영화는?" → 검색을 통해 최신 인기 영화 정보를 얻을 수 있음
+- "오늘 주요 뉴스는?" → 검색으로 최신 뉴스를 얻을 수 있음
+- "현재 주식 시장은?" → 검색으로 최신 주식 시장 정보를 얻을 수 있음
 
 JSON 형식으로 아래와 같이 분석 결과를 반환해주세요:
 {
@@ -703,8 +766,14 @@ JSON 형식으로 아래와 같이 분석 결과를 반환해주세요:
   "subtype": "time|date|datetime|none",
   "datetime_needed": true/false,
   "search_needed": true/false,
+  "relative_importance": "search|datetime|both",
   "reasoning": "분석에 대한 설명"
 }
+
+relative_importance는 다음과 같이 판단하세요:
+- "search": 검색 결과가 주요 정보원인 경우 (날씨, 뉴스, 제품 정보 등)
+- "datetime": 현재 날짜/시간이 주요 정보원인 경우 (시간 계산, 요일 확인 등)
+- "both": 두 정보가 모두 중요한 경우 (특정 날짜로부터 경과 시간 등)
 """
 
     # 질의 텍스트
@@ -750,6 +819,9 @@ JSON 형식으로 아래와 같이 분석 결과를 반환해주세요:
                     result["search_needed"] = False
                 if "subtype" not in result:
                     result["subtype"] = "none"
+                if "relative_importance" not in result:
+                    # 기본값 설정 - datetime_needed가 true이면 datetime, 아니면 search
+                    result["relative_importance"] = "datetime" if result.get("datetime_needed", False) and not result.get("search_needed", True) else "search"
                 
                 return result
             except json.JSONDecodeError:
